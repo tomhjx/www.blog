@@ -1,0 +1,1754 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+
+
+
+
+
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.tomhjx.top","root":"/","images":"/images","scheme":"Mist","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script>
+<meta name="description" content="¶目标及关键路径  https://www.php.net/releases/8.0/zh.php   提升性能  基于缓存前置思想，使用CPU机器码缓存，绕过Zend VM及其过程开销来尽可能提升性能  JIT      ¶从 PHP 7.4.x 移植到 PHP 8.0.x  PHP 8.0: What’s New and Changed PHP Manual  ¶不向后兼容的变更 ¶PHP C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 8.0.x">
+<meta property="og:url" content="https://www.tomhjx.top/2020/11/26/PHP-8-0-x/index.html">
+<meta property="og:site_name" content="疯狂的茶几">
+<meta property="og:description" content="¶目标及关键路径  https://www.php.net/releases/8.0/zh.php   提升性能  基于缓存前置思想，使用CPU机器码缓存，绕过Zend VM及其过程开销来尽可能提升性能  JIT      ¶从 PHP 7.4.x 移植到 PHP 8.0.x  PHP 8.0: What’s New and Changed PHP Manual  ¶不向后兼容的变更 ¶PHP C">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-26T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-15T08:34:35.738Z">
+<meta property="article:author" content="疯狂的茶几">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="历史">
+<meta property="article:tag" content="PHP发展史">
+<meta property="article:tag" content="技术发展史">
+<meta property="article:tag" content="PHP8">
+<meta property="article:tag" content="Cryptographic Message Syntax">
+<meta property="article:tag" content="Pseudo Terminals">
+<meta property="article:tag" content="Socket Pairs">
+<meta property="article:tag" content="PHP Zip">
+<meta property="article:tag" content="PHP Tokenizer">
+<meta property="article:tag" content="Just-In-Time">
+<meta property="article:tag" content="JIT">
+<meta property="article:tag" content="Streaming SIMD Extensions 2">
+<meta property="article:tag" content="SSE2">
+<meta property="article:tag" content="LSP">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.tomhjx.top/2020/11/26/PHP-8-0-x/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.tomhjx.top/2020/11/26/PHP-8-0-x/","path":"2020/11/26/PHP-8-0-x/","title":"PHP 8.0.x"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PHP 8.0.x | 疯狂的茶几</title>
+  
+
+
+
+<script data-ad-client="ca-pub-5611057674493702" async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <style>@-moz-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-webkit-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-o-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-moz-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-webkit-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-o-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-moz-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-webkit-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-o-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-moz-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-webkit-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-o-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-moz-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@-webkit-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@-o-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}:root{--body-bg-color:#fff;--content-bg-color:#f5f5f5;--card-bg-color:#f5f5f5;--text-color:#555;--blockquote-color:#666;--link-color:#555;--link-hover-color:#222;--brand-color:#222;--brand-hover-color:#222;--table-row-odd-bg-color:#f9f9f9;--table-row-hover-bg-color:#f5f5f5;--menu-item-bg-color:#ddd;--btn-default-bg:transparent;--btn-default-color:var(--link-color);--btn-default-border-color:var(--link-color);--btn-default-hover-bg:transparent;--btn-default-hover-color:var(--link-hover-color);--btn-default-hover-border-color:var(--link-hover-color);--highlight-background:#f0f0f0;--highlight-foreground:#444;--highlight-gutter-background:#dedede;--highlight-gutter-foreground:#555}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}details,main{display:block}hr{box-sizing:content-box;overflow:visible;background-image:repeating-linear-gradient(-45deg,#ddd,#ddd 4px,transparent 4px,transparent 8px);border:0;height:2px;margin:20px 0}kbd,pre,samp{font-size:1em}samp{font-family:monospace,monospace}a{background:0 0;border-bottom:1px solid #ccc;color:var(--link-color);cursor:pointer;outline:0;text-decoration:none;overflow-wrap:break-word}abbr[title]{border-bottom:none;text-decoration:underline dotted}b,strong{font-weight:bolder}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{color:inherit;display:table;max-width:100%;white-space:normal}progress{vertical-align:baseline}textarea{overflow:auto}[type=checkbox],[type=radio],legend{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}summary{display:list-item}[hidden],template{display:none}::selection{background:#262a30;color:#eee}body,html{height:100%}body,h1,h2,h3,h4,h5,h6{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif}body{background:var(--body-bg-color);color:var(--text-color);line-height:2;min-height:100%;position:relative;transition:padding .2s ease-in-out}h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.5;margin:30px 0 15px}h1{font-size:1.5em}h2{font-size:1.375em}h3{font-size:1.25em}h4{font-size:1.125em}body,h5{font-size:1em}h6{font-size:.875em}p,table{margin:0 0 20px}a:hover{border-bottom-color:var(--link-hover-color);color:var(--link-hover-color)}embed,iframe,img,video{display:block;margin-left:auto;margin-right:auto;max-width:100%}blockquote{border-left:4px solid #ddd;color:var(--blockquote-color);margin:0;padding:0 15px}blockquote cite::before{content:'-';padding:0 5px}dt{font-weight:700}dd{margin:0;padding:0}.table-container{overflow:auto}table{border-collapse:collapse;border-spacing:0;font-size:.875em;width:100%}tbody tr:nth-of-type(odd){background:var(--table-row-odd-bg-color)}tbody tr:hover{background:var(--table-row-hover-bg-color)}caption,td,th{padding:8px}td,th{border:1px solid #ddd;border-bottom:3px solid #ddd}th{font-weight:700;padding-bottom:10px}td{border-bottom-width:1px}.btn{background:var(--btn-default-bg);border:2px solid var(--btn-default-border-color);border-radius:0;color:var(--btn-default-color);display:inline-block;font-size:.875em;line-height:2;transition:background-color .2s ease-in-out}.btn:hover{background:var(--btn-default-hover-bg);border-color:var(--btn-default-hover-border-color);color:var(--btn-default-hover-color)}.btn+.btn{margin:0 0 8px 8px}.btn .fa-fw{text-align:left;width:1.285714285714286em}.toggle{line-height:0}.toggle .toggle-line{background:#fff;display:block;height:2px;left:0;position:relative;top:0;transition:all .4s;width:100%}.toggle .toggle-line:not(:first-child){margin-top:3px}.toggle.toggle-arrow .toggle-line:first-child{left:50%;top:2px;transform:rotate(45deg);width:50%}.toggle.toggle-arrow .toggle-line:last-child{left:50%;top:-2px;transform:rotate(-45deg);width:50%}.toggle.toggle-close .toggle-line:nth-child(2){opacity:0}.toggle.toggle-close .toggle-line:first-child{top:5px;transform:rotate(45deg)}.toggle.toggle-close .toggle-line:last-child{top:-5px;transform:rotate(-45deg)}code,figure.highlight,kbd,pre{background:var(--highlight-background);color:var(--highlight-foreground)}figure.highlight,pre{line-height:1.6;margin:0 auto 20px}code,pre{font-family:consolas,Menlo,monospace,'PingFang SC','Microsoft YaHei'}code{border-radius:3px;font-size:.875em;padding:2px 4px;overflow-wrap:break-word}kbd{border:2px solid #ccc;border-radius:.2em;box-shadow:.1em .1em .2em rgba(0,0,0,.1);font-family:inherit;padding:.1em .3em;white-space:nowrap}figure.highlight,pre{position:relative}figure.highlight pre{border:0;margin:0;padding:10px 0}figure.highlight table{border:0;margin:0;width:auto}figure.highlight td{border:0;padding:0}figure.highlight figcaption,pre .caption,pre figcaption{background:var(--highlight-gutter-background);color:var(--highlight-foreground);display:flow-root;font-size:.875em;line-height:1.2;padding:.5em}figure.highlight figcaption a,pre .caption a,pre figcaption a{color:var(--highlight-foreground);float:right}figure.highlight figcaption a:hover,pre .caption a:hover,pre figcaption a:hover{border-bottom-color:var(--highlight-foreground)}figure.highlight .gutter{-moz-user-select:none;-ms-user-select:none;-webkit-user-select:none;user-select:none}figure.highlight .gutter pre{background:var(--highlight-gutter-background);color:var(--highlight-gutter-foreground);padding-left:10px;padding-right:10px;text-align:right}figure.highlight .code pre{padding-left:10px;width:100%}pre .caption,pre figcaption{margin-bottom:10px}.gist table{width:auto}.gist table td{border:0}pre{overflow:auto;padding:10px}pre code{background:0 0;padding:0;text-shadow:none}.blockquote-center{border-left:none;margin:40px 0;padding:0;position:relative;text-align:center}.blockquote-center::after,.blockquote-center::before{left:0;line-height:1;opacity:.6;position:absolute;width:100%}.blockquote-center::before{border-top:1px solid #ccc;text-align:left;top:-20px;content:'\f10d';font-family:'Font Awesome 5 Free';font-weight:900}.blockquote-center::after{border-bottom:1px solid #ccc;bottom:-20px;text-align:right;content:'\f10e';font-family:'Font Awesome 5 Free';font-weight:900}.blockquote-center div,.blockquote-center p{text-align:center}.group-picture{margin-bottom:20px}.group-picture .group-picture-row{display:flex;gap:3px;margin-bottom:3px}.group-picture .group-picture-column{flex:1}.group-picture .group-picture-column img{height:100%;margin:0;object-fit:cover;width:100%}.post-body .label{color:#555;padding:0 2px}.post-body .label.default{background:#f0f0f0}.post-body .label.primary{background:#efe6f7}.post-body .label.info{background:#e5f2f8}.post-body .label.success{background:#e7f4e9}.post-body .label.warning{background:#fcf6e1}.post-body .label.danger{background:#fae8eb}.post-body .link-grid{display:grid;grid-gap:1.5rem 1.5rem;gap:1.5rem 1.5rem;grid-template-columns:1fr 1fr;margin-bottom:20px;padding:1rem}@media (max-width:767px){.post-body .link-grid{grid-template-columns:1fr}}.post-body .link-grid .link-grid-container{border:solid #ddd;box-shadow:1rem 1rem .5rem rgba(0,0,0,.5);min-height:5rem;min-width:0;padding:.5rem;position:relative;transition:background .3s}.post-body .link-grid .link-grid-container:hover{animation:next-shake .5s;background:var(--card-bg-color)}.post-body .link-grid .link-grid-container:active{box-shadow:.5rem .5rem .25rem rgba(0,0,0,.5);transform:translate(.2rem,.2rem)}.post-body .link-grid .link-grid-container .link-grid-image{border:1px solid #ddd;border-radius:50%;box-sizing:border-box;height:5rem;padding:3px;position:absolute;width:5rem}.post-body .link-grid .link-grid-container p{margin:0 1rem 0 6rem}.post-body .link-grid .link-grid-container p:first-of-type{font-size:1.2em}.post-body .link-grid .link-grid-container p:last-of-type{font-size:.8em;line-height:1.3rem;opacity:.7}.post-body .link-grid .link-grid-container a{border:0;height:100%;left:0;position:absolute;top:0;width:100%}.post-body .tabs{margin-bottom:20px;padding-top:10px}.post-body .tabs ul.nav-tabs,.tabs-comment ul.nav-tabs{display:flex;flex-wrap:wrap;justify-content:center;margin:0;padding:0}@media (max-width:413px){.post-body .tabs ul.nav-tabs,.tabs-comment ul.nav-tabs{display:block;margin-bottom:5px}}.post-body .tabs ul.nav-tabs li.tab,.tabs-comment ul.nav-tabs li.tab{border-bottom:1px solid #ddd;border-left:1px solid transparent;border-right:1px solid transparent;border-radius:0 0 0 0;border-top:3px solid transparent;flex-grow:1;list-style-type:none}@media (max-width:413px){.post-body .tabs ul.nav-tabs li.tab,.tabs-comment ul.nav-tabs li.tab{border-bottom:1px solid transparent;border-left:3px solid transparent;border-right:1px solid transparent;border-top:1px solid transparent;border-radius:0}}.post-body .tabs ul.nav-tabs li.tab a,.tabs-comment ul.nav-tabs li.tab a{border-bottom:initial;display:block;line-height:1.8;padding:.25em .75em;text-align:center;transition:all .2s ease-out}.post-body .tabs ul.nav-tabs li.tab a i,.tabs-comment ul.nav-tabs li.tab a i{width:1.285714285714286em}.post-body .tabs ul.nav-tabs li.tab.active,.tabs-comment ul.nav-tabs li.tab.active{border-color:#fc6423 #ddd transparent}@media (max-width:413px){.post-body .tabs ul.nav-tabs li.tab.active,.tabs-comment ul.nav-tabs li.tab.active{border-color:#ddd #ddd #ddd #fc6423}}.post-body .tabs ul.nav-tabs li.tab.active a,.tabs-comment ul.nav-tabs li.tab.active a{cursor:default}.post-body .tabs .tab-content,.tabs-comment .tab-content{border:1px solid #ddd;border-radius:0 0 0 0;border-top-color:transparent}@media (max-width:413px){.post-body .tabs .tab-content,.tabs-comment .tab-content{border-radius:0;border-top-color:#ddd}}.post-body .tabs .tab-content .tab-pane,.tabs-comment .tab-content .tab-pane{padding:20px 20px 0}.post-body .tabs .tab-content .tab-pane:not(.active),.tabs-comment .tab-content .tab-pane:not(.active){display:none}.post-body .note{border-radius:3px;margin-bottom:20px;padding:1em;position:relative;border:1px solid #eee;border-left-width:5px}.post-body .note summary{cursor:pointer;outline:0}.post-body .note summary p{display:inline}.post-body .note h2,.post-body .note h3,.post-body .note h4,.post-body .note h5,.post-body .note h6{border-bottom:initial;margin:0;padding-top:0}.post-body .note blockquote:first-child,.post-body .note img:first-child,.post-body .note ol:first-child,.post-body .note p:first-child,.post-body .note pre:first-child,.post-body .note table:first-child,.post-body .note ul:first-child{margin-top:0}.post-body .note blockquote:last-child,.post-body .note img:last-child,.post-body .note ol:last-child,.post-body .note p:last-child,.post-body .note pre:last-child,.post-body .note table:last-child,.post-body .note ul:last-child{margin-bottom:0}.post-body .note.default{border-left-color:#777}.post-body .note.default h2,.post-body .note.default h3,.post-body .note.default h4,.post-body .note.default h5,.post-body .note.default h6{color:#777}.post-body .note.primary{border-left-color:#6f42c1}.post-body .note.primary h2,.post-body .note.primary h3,.post-body .note.primary h4,.post-body .note.primary h5,.post-body .note.primary h6{color:#6f42c1}.post-body .note.info{border-left-color:#428bca}.post-body .note.info h2,.post-body .note.info h3,.post-body .note.info h4,.post-body .note.info h5,.post-body .note.info h6{color:#428bca}.post-body .note.success{border-left-color:#5cb85c}.post-body .note.success h2,.post-body .note.success h3,.post-body .note.success h4,.post-body .note.success h5,.post-body .note.success h6{color:#5cb85c}.post-body .note.warning{border-left-color:#f0ad4e}.post-body .note.warning h2,.post-body .note.warning h3,.post-body .note.warning h4,.post-body .note.warning h5,.post-body .note.warning h6{color:#f0ad4e}.post-body .note.danger{border-left-color:#d9534f}.post-body .note.danger h2,.post-body .note.danger h3,.post-body .note.danger h4,.post-body .note.danger h5,.post-body .note.danger h6{color:#d9534f}.mermaid{margin-bottom:20px;text-align:center}.pagination .next,.pagination .page-number,.pagination .prev{display:inline-block;margin:-1px 10px 0;padding:0 10px}.pagination .space{display:inline-block}@media (max-width:767px){.pagination .next,.pagination .page-number,.pagination .prev,.pagination .space{margin:0 5px}}.pagination{border-top:1px solid #eee;margin:120px 0 0}.pagination .next,.pagination .page-number,.pagination .prev{border-bottom:0;border-top:1px solid #eee;transition:border-color .2s ease-in-out}.pagination .next:hover,.pagination .page-number:hover,.pagination .prev:hover{border-top-color:var(--link-hover-color)}@media (max-width:767px){.pagination{border-top:0}.pagination .next,.pagination .page-number,.pagination .prev{border-bottom:1px solid #eee;border-top:0}.pagination .next:hover,.pagination .page-number:hover,.pagination .prev:hover{border-bottom-color:var(--link-hover-color)}}.pagination .space{margin:0;padding:0}.pagination .page-number.current{background:#ccc;border-color:#ccc;color:var(--content-bg-color)}.comments{margin-top:60px;overflow:hidden}.comment-button-group{display:flex;flex-wrap:wrap;justify-content:center;margin:1em 0}.comment-button-group .comment-button{margin:.1em .2em}.comment-button-group .comment-button.active{background:var(--btn-default-hover-bg);border-color:var(--btn-default-hover-border-color);color:var(--btn-default-hover-color)}.comment-position{display:none}.comment-position.active,.menu-item a{display:block}.tabs-comment{margin-top:4em;padding-top:0}.tabs-comment .comments{margin-top:0;padding-top:0}.headband{background:#222;height:3px}@media (max-width:991px){.headband{display:none}}.header{background:var(--content-bg-color)}.header-inner{margin:0 auto;width:700px}@media (min-width:1200px){.header-inner{width:800px}}@media (min-width:1600px){.header-inner{width:900px}}.site-brand-container{display:flex;flex-shrink:0;padding:0 10px}.use-motion .header,.use-motion .site-brand-container .toggle{opacity:0}.site-meta{flex-grow:1;text-align:center}@media (max-width:767px){.site-meta{text-align:center}}.custom-logo-image{margin-top:20px}@media (max-width:991px){.custom-logo-image{display:none}}.brand{border-bottom:0;color:var(--brand-color);display:inline-block;padding:0 40px}.brand:hover{color:var(--brand-hover-color)}.site-title{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;font-size:1.375em;font-weight:400;margin:0}.site-subtitle{color:#999;font-size:.8125em;margin:10px 0}.use-motion .custom-logo-image,.use-motion .site-subtitle,.use-motion .site-title{opacity:0;position:relative;top:-10px}.site-nav-right,.site-nav-toggle{display:none}@media (max-width:767px){.site-nav-right,.site-nav-toggle{display:flex;flex-direction:column;justify-content:center}}.site-nav-right .toggle,.site-nav-toggle .toggle{color:var(--text-color);padding:10px;width:22px}.site-nav-right .toggle .toggle-line,.site-nav-toggle .toggle .toggle-line{background:var(--text-color);border-radius:1px}@media (max-width:767px){.site-nav{--scroll-height:0;height:0;overflow:hidden;transition:height .2s ease-in-out}body:not(.site-nav-on) .site-nav .animated{animation:none}body.site-nav-on .site-nav{height:var(--scroll-height)}}.menu{margin:0;text-align:center}.menu-item{display:inline-block;list-style:none;margin:0 10px}@media (max-width:767px){.menu-item{display:block;margin-top:10px}.menu-item.menu-item-search{display:none}}.menu-item a{border-bottom:0;font-size:.8125em;transition:border-color .2s ease-in-out}.menu-item a.menu-item-active,.menu-item a:hover{background:var(--menu-item-bg-color)}.menu-item .fa,.menu-item .fab,.menu-item .far,.menu-item .fas{margin-right:8px}.menu-item .badge{display:inline-block;font-weight:700;line-height:1;margin-left:.35em;margin-top:.35em;text-align:center;white-space:nowrap}@media (max-width:767px){.menu-item .badge{float:right;margin-left:0}}.use-motion .menu-item{visibility:hidden}.github-corner :hover .octo-arm{animation:octocat-wave 560ms ease-in-out}.github-corner svg{color:#fff;fill:#222;position:absolute;right:0;top:0;z-index:1000}@media (max-width:991px){.github-corner{display:none}.github-corner .github-corner:hover .octo-arm{animation:none}.github-corner .github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}@media (max-width:767px){.github-corner svg{top:inherit}}.sidebar-inner{color:#999;padding:18px 10px;text-align:center}.site-overview{max-height:var(--sidebar-wrapper-height)}.site-overview-item:not(:first-child){margin-top:10px}.cc-license .cc-opacity{border-bottom:0;opacity:.7}.cc-license .cc-opacity:hover{opacity:.9}.cc-license img,.post-reward div{display:inline-block}.site-author-image{border:2px solid #333;max-width:96px;padding:2px}.site-author-name{color:#f5f5f5;font-weight:400;margin:5px 0 0}.site-description{color:#999;font-size:1em;margin-top:5px}.links-of-author a,.links-of-blogroll{font-size:.8125em}.links-of-author .fa,.links-of-author .fab,.links-of-author .far,.links-of-author .fas{margin-right:2px}.sidebar .sidebar-button:not(:first-child){margin-top:15px}.sidebar .sidebar-button button{background:0 0;color:#fc6423;cursor:pointer;line-height:2;padding:0 15px;border:1px solid #fc6423;border-radius:4px}.sidebar .sidebar-button button:hover{background:#fc6423;color:#fff}.sidebar .sidebar-button button .fa,.sidebar .sidebar-button button .fab,.sidebar .sidebar-button button .far,.sidebar .sidebar-button button .fas{margin-right:5px}.links-of-blogroll-title{font-size:.875em;font-weight:600;margin-top:0}.links-of-blogroll-list{list-style:none;margin:0;padding:0}.sidebar-dimmer{display:none}@media (max-width:991px){.sidebar-dimmer{background:#000;display:block;height:100%;left:0;opacity:0;position:fixed;top:0;transition:visibility .4s,opacity .4s;visibility:hidden;width:100%;z-index:1100}.sidebar-active .sidebar-dimmer{opacity:.7;visibility:visible}}.sidebar-nav{display:none;margin:0;padding-bottom:20px;padding-left:0}.sidebar-nav-active .sidebar-nav{display:block}.sidebar-nav li{border-bottom:1px solid transparent;color:#666;cursor:pointer;display:inline-block;font-size:.875em}.sidebar-nav li.sidebar-nav-overview{margin-left:10px}.sidebar-nav li:hover{color:#f5f5f5}.post-toc .nav .active>a,.sidebar-overview-active .sidebar-nav-overview,.sidebar-toc-active .sidebar-nav-toc{border-bottom-color:#87daff;color:#87daff}.post-toc .nav .active-current>a,.post-toc .nav .active-current>a:hover,.sidebar-overview-active .sidebar-nav-overview:hover,.sidebar-toc-active .sidebar-nav-toc:hover{color:#87daff}.sidebar-panel-container{max-height:var(--sidebar-wrapper-height);overflow-x:hidden;overflow-y:auto}.sidebar-panel{display:none}.sidebar-overview-active .site-overview-wrap{display:flex;flex-direction:column;justify-content:center}.sidebar-toc-active .post-toc-wrap{display:block}.sidebar-toggle{bottom:45px;height:12px;padding:6px 5px;width:14px;background:#222;cursor:pointer;opacity:.8;position:fixed;z-index:1300;left:30px}@media (max-width:991px){.sidebar-toggle{left:20px}}.sidebar-toggle:hover{opacity:1}@media (max-width:991px){.sidebar-toggle{opacity:1}}.sidebar-toggle:hover .toggle-line{background:#87daff}@media (any-hover:hover){body:not(.sidebar-active) .sidebar-toggle:hover .toggle-line:first-child{left:50%;top:2px;transform:rotate(45deg);width:50%}body:not(.sidebar-active) .sidebar-toggle:hover .toggle-line:last-child{left:50%;top:-2px;transform:rotate(-45deg);width:50%}}.sidebar-active .sidebar-toggle .toggle-line:nth-child(2){opacity:0}.sidebar-active .sidebar-toggle .toggle-line:first-child{top:5px;transform:rotate(45deg)}.sidebar-active .sidebar-toggle .toggle-line:last-child{top:-5px;transform:rotate(-45deg)}.post-toc{font-size:.875em}.post-toc ol{list-style:none;margin:0;padding:0 2px 5px 10px;text-align:left}.post-toc ol>ol{padding-left:0}.post-toc ol a{transition:all .2s ease-in-out}.post-toc .nav-item{line-height:1.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.back-to-top span,.post-toc .nav .nav-child{display:none}.post-toc .nav .active-current>.nav-child,.post-toc .nav .active-current>.nav-child>.nav-item,.post-toc .nav .active>.nav-child{display:block}.site-state{display:flex;flex-wrap:wrap;justify-content:center;line-height:1.4}.site-state-item{padding:0 15px}.site-state-item a{border-bottom:0;display:block}.site-state-item-count{display:block;font-size:1.25em;font-weight:600}.footer,.site-state-item-name{color:inherit;font-size:.875em}.footer{color:#999}.footer.footer-fixed{bottom:0;left:0;position:absolute;right:0}.footer-inner{box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;margin:0 auto;width:700px}@media (min-width:1200px){.footer-inner{width:800px}}@media (min-width:1600px){.footer-inner{width:900px}}.use-motion .footer{opacity:0}.languages{display:inline-block;font-size:1.125em;position:relative}.languages .lang-select-label span{margin:0 .5em}.languages .lang-select{height:100%;left:0;opacity:0;position:absolute;top:0;width:100%}.with-love{color:gray;display:inline-block;margin:0 5px}.back-to-top{font-size:12px;bottom:-100px;box-sizing:border-box;color:#fff;padding:0 6px;transition:bottom .2s ease-in-out;background:#222;cursor:pointer;opacity:.8;position:fixed;z-index:1300;left:30px;width:24px}@media (max-width:991px){.back-to-top{left:20px}}.back-to-top:hover{opacity:1;color:#87daff}@media (max-width:991px){.back-to-top{opacity:1}}.back-to-top.back-to-top-on{bottom:19px}.noscript-warning{background-color:#f55;color:#fff;font-family:sans-serif;font-size:1rem;font-weight:700;left:0;position:fixed;text-align:center;top:0;width:100%;z-index:1500}.rtl.post-body a,.rtl.post-body h1,.rtl.post-body h2,.rtl.post-body h3,.rtl.post-body h4,.rtl.post-body h5,.rtl.post-body h6,.rtl.post-body li,.rtl.post-body ol,.rtl.post-body p,.rtl.post-body ul{direction:rtl;font-family:UKIJ Ekran}.rtl.post-title{font-family:UKIJ Ekran}.use-motion .collection-header,.use-motion .comments,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{visibility:hidden}.posts-collapse .post-content{margin-bottom:35px;margin-left:35px;position:relative}@media (max-width:767px){.posts-collapse .post-content{margin-left:0;margin-right:0}}.posts-collapse .post-content .collection-title{font-size:1.125em;position:relative}.posts-collapse .post-content .collection-title::before{background:#999;border:1px solid #fff;margin-left:-6px;margin-top:-4px;position:absolute;top:50%;border-radius:50%;content:' ';height:10px;width:10px}.posts-collapse .post-content .collection-year{font-size:1.5em;font-weight:700;margin:60px 0;position:relative}.posts-collapse .post-content .collection-year::before{background:#bbb;margin-left:-4px;margin-top:-4px;position:absolute;top:50%;border-radius:50%;content:' ';height:8px;width:8px}.posts-collapse .post-content .collection-header{display:block;margin-left:20px}.posts-collapse .post-content .collection-header small{color:#bbb;margin-left:5px}.posts-collapse .post-content .post-header{border-bottom:1px dashed #ccc;margin:30px 2px 0;padding-left:15px;position:relative;transition:border .2s ease-in-out}.posts-collapse .post-content .post-header::before{background:#bbb;border:1px solid #fff;left:-6px;position:absolute;top:.75em;transition:background .2s ease-in-out;border-radius:50%;content:' ';height:6px;width:6px}.posts-collapse .post-content .post-header:hover{border-bottom-color:#666}.posts-collapse .post-content .post-header:hover::before{background:#222}.posts-collapse .post-content .post-meta-container{display:inline;font-size:.75em;margin-right:10px}.posts-collapse .post-content .post-title,ul.breadcrumb li{display:inline}.posts-collapse .post-content .post-title a{border-bottom:0;color:var(--link-color)}.posts-collapse .post-content .post-title .fa-external-link-alt{font-size:.875em;margin-left:5px}.posts-collapse .post-content::before{background:#f5f5f5;content:' ';height:100%;margin-left:-2px;position:absolute;top:1.25em;width:4px}.post-body{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;overflow-wrap:break-word}@media (min-width:1200px){.post-body{font-size:1.125em}}@media (min-width:992px){.post-body{text-align:justify}}@media (max-width:991px){.post-body{text-align:justify}}.post-body h1 .header-anchor,.post-body h1 .headerlink,.post-body h2 .header-anchor,.post-body h2 .headerlink,.post-body h3 .header-anchor,.post-body h3 .headerlink,.post-body h4 .header-anchor,.post-body h4 .headerlink,.post-body h5 .header-anchor,.post-body h5 .headerlink,.post-body h6 .header-anchor,.post-body h6 .headerlink{border-bottom-style:none;color:inherit;float:right;font-size:.875em;margin-left:10px;opacity:0}.post-body h1 .header-anchor::before,.post-body h1 .headerlink::before,.post-body h2 .header-anchor::before,.post-body h2 .headerlink::before,.post-body h3 .header-anchor::before,.post-body h3 .headerlink::before,.post-body h4 .header-anchor::before,.post-body h4 .headerlink::before,.post-body h5 .header-anchor::before,.post-body h5 .headerlink::before,.post-body h6 .header-anchor::before,.post-body h6 .headerlink::before{content:'\f0c1';font-family:'Font Awesome 5 Free';font-weight:900}.post-body h1:hover .header-anchor,.post-body h1:hover .headerlink,.post-body h2:hover .header-anchor,.post-body h2:hover .headerlink,.post-body h3:hover .header-anchor,.post-body h3:hover .headerlink,.post-body h4:hover .header-anchor,.post-body h4:hover .headerlink,.post-body h5:hover .header-anchor,.post-body h5:hover .headerlink,.post-body h6:hover .header-anchor,.post-body h6:hover .headerlink{opacity:.5}.post-body h1:hover .header-anchor:hover,.post-body h1:hover .headerlink:hover,.post-body h2:hover .header-anchor:hover,.post-body h2:hover .headerlink:hover,.post-body h3:hover .header-anchor:hover,.post-body h3:hover .headerlink:hover,.post-body h4:hover .header-anchor:hover,.post-body h4:hover .headerlink:hover,.post-body h5:hover .header-anchor:hover,.post-body h5:hover .headerlink:hover,.post-body h6:hover .header-anchor:hover,.post-body h6:hover .headerlink:hover{opacity:1}.post-body .exturl .fa{font-size:.875em;margin-left:4px}.post-body .figure .caption,.post-body .image-caption{color:#999;font-size:.875em;font-weight:700;line-height:1;margin:-20px auto 15px;text-align:center}.post-body embed,.post-body iframe,.post-body img,.post-body video{margin-bottom:20px}.post-body .video-container{height:0;margin-bottom:20px;overflow:hidden;padding-top:75%;position:relative;width:100%}.post-body .video-container embed,.post-body .video-container iframe,.post-body .video-container object{height:100%;left:0;margin:0;position:absolute;top:0;width:100%}.post-gallery{display:flex;min-height:200px}.post-gallery .post-gallery-image{flex:1}.post-gallery .post-gallery-image:not(:first-child){clip-path:polygon(40px 0,100% 0,100% 100%,0 100%);margin-left:-20px}.post-gallery .post-gallery-image:not(:last-child){margin-right:-20px}.post-gallery .post-gallery-image img{height:100%;object-fit:cover;opacity:1;width:100%}.posts-expand .post-gallery{margin-bottom:60px}.posts-collapse .post-gallery{margin:15px 0}.posts-expand .post-header{font-size:1.125em;text-align:center}.posts-expand .post-title{font-size:1.5em;font-weight:400;margin:initial;overflow-wrap:break-word}.posts-expand .post-title-link{border-bottom:0;color:var(--link-color);display:inline-block;position:relative}.posts-expand .post-title-link::before{background:var(--link-color);bottom:0;content:'';height:2px;left:0;position:absolute;transform:scaleX(0);transition:transform .2s ease-in-out;width:100%}.posts-expand .post-title-link:hover::before{transform:scaleX(1)}.posts-expand .post-title-link .fa-external-link-alt{font-size:.875em;margin-left:5px}.post-sticky-flag{display:inline-block;margin-right:8px;transform:rotate(30deg)}.posts-expand .post-meta-container{color:#999;font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;font-size:.75em;margin-top:3px}.posts-expand .post-meta-container .post-description{font-size:.875em;margin-top:2px}.posts-expand .post-meta-container time{border-bottom:1px dashed #999;cursor:pointer}.post-meta{display:flex;flex-wrap:wrap;justify-content:center}:not(.post-meta-break)+.post-meta-item::before{content:'|';margin:0 .5em}.post-meta-item-icon{margin-right:3px}@media (max-width:991px){.post-meta-item-text{display:none}}.post-meta-break{flex-basis:100%;height:0}.post-nav{border-top:1px solid #eee;display:flex;gap:30px;justify-content:space-between;margin-top:1em;padding:10px 5px 0}.post-nav-item{flex:1}.post-nav-item a{border-bottom:0;display:block;font-size:.875em;line-height:1.6}.post-nav-item a:active{top:2px}.post-nav-item .fa{font-size:.75em}.post-nav-item:first-child .fa{margin-right:5px}.post-nav-item:last-child{text-align:right}.post-nav-item:last-child .fa{margin-left:5px}.post-footer{display:flex;flex-direction:column;justify-content:center}.post-eof{background:#ccc;height:1px;margin:80px auto 60px;width:8%}.post-block:last-of-type .post-eof{display:none}.post-tags{margin-top:40px;text-align:center}.post-tags a{display:inline-block;font-size:.8125em}.post-tags a:not(:last-child){margin-right:10px}.post-widgets{border-top:1px solid #eee;margin-top:15px;text-align:center}.wp_rating{height:20px;line-height:20px;margin-top:10px;padding-top:6px;text-align:center}.social-like{display:flex;font-size:.875em;justify-content:center;text-align:center}.reward-container{margin:1em 0 0;padding:1em 0;text-align:center}.reward-container button{background:0 0;color:#87daff;cursor:pointer;line-height:2;padding:0 15px;border:2px solid #87daff;border-radius:2px;outline:0;transition:all .2s ease-in-out;vertical-align:text-top}.reward-container button:hover{background:#87daff;color:#fff}.post-reward{display:none;padding-top:20px}.post-reward div span,.post-reward.active{display:block}.post-reward img{display:inline-block;margin:.8em 2em 0;max-width:100%;width:180px}.category-all-page .category-all-title,.tag-cloud{text-align:center}.category-all-page .category-all{margin-top:20px}.category-all-page .category-list{list-style:none;margin:0;padding:0}.category-all-page .category-list-item{margin:5px 10px}.category-all-page .category-list-count{color:#bbb}.category-all-page .category-list-count::before{content:' ('}.category-all-page .category-list-count::after{content:') '}.category-all-page .category-list-child{padding-left:10px}.event-list hr{background:#222;margin:20px 0 45px}.event-list hr::after{background:#222;color:#fff;content:'NOW';display:inline-block;font-weight:700;padding:0 5px}.event-list .event{--event-background:#222;--event-foreground:#bbb;--event-title:#fff;background:var(--event-background);padding:15px}.event-list .event .event-summary{border-bottom:0;color:var(--event-title);margin:0;padding:0 0 0 35px;position:relative}.event-list .event .event-summary::before{animation:dot-flash 1s alternate infinite ease-in-out;background:var(--event-title);left:0;margin-top:-6px;position:absolute;top:50%;border-radius:50%;content:' ';height:12px;width:12px}.event-list .event:nth-of-type(odd) .event-summary::before{animation-delay:.5s}.event-list .event:not(:last-child){margin-bottom:20px}.event-list .event .event-relative-time{color:var(--event-foreground);display:inline-block;font-size:12px;font-weight:400;padding-left:12px}.event-list .event .event-details{color:var(--event-foreground);display:block;line-height:18px;padding:6px 0 6px 35px}.event-list .event .event-details::before{color:var(--event-foreground);display:inline-block;margin-right:9px;width:14px;font-family:'Font Awesome 5 Free';font-weight:900}.event-list .event .event-details.event-location::before{content:'\f041'}.event-list .event .event-details.event-duration::before{content:'\f017'}.event-list .event .event-details.event-description::before{content:'\f024'}.event-list .event-past{--event-background:#f5f5f5;--event-foreground:#999;--event-title:#222}ul.breadcrumb{font-size:.75em;list-style:none;margin:1em 0;padding:0 2em;text-align:center}ul.breadcrumb li:not(:first-child)::before{content:'/\00a0';font-weight:400;padding:.5em}ul.breadcrumb li:last-child{font-weight:700}.tag-cloud a{display:inline-block;margin:10px}.tag-cloud-0{border-bottom-color:#aaa;color:#aaa}.tag-cloud-1{border-bottom-color:#9a9a9a;color:#9a9a9a}.tag-cloud-2{border-bottom-color:#8b8b8b;color:#8b8b8b}.tag-cloud-3{border-bottom-color:#7c7c7c;color:#7c7c7c}.tag-cloud-4{border-bottom-color:#6c6c6c;color:#6c6c6c}.tag-cloud-5{border-bottom-color:#5d5d5d;color:#5d5d5d}.tag-cloud-6{border-bottom-color:#4e4e4e;color:#4e4e4e}.tag-cloud-7{border-bottom-color:#3e3e3e;color:#3e3e3e}.tag-cloud-8{border-bottom-color:#2f2f2f;color:#2f2f2f}.tag-cloud-9{border-bottom-color:#202020;color:#202020}.tag-cloud-10{border-bottom-color:#111;color:#111}.search-active{overflow:hidden}.search-pop-overlay{background:0 0;display:flex;height:100%;left:0;position:fixed;top:0;transition:visibility .4s,background .4s;visibility:hidden;width:100%;z-index:1400}.search-active .search-pop-overlay{background:rgba(0,0,0,.3);visibility:visible}.search-popup{background:var(--card-bg-color);border-radius:5px;height:80%;margin:auto;transform:scale(0);transition:transform .4s;width:700px}.search-active .search-popup{transform:scale(1)}@media (max-width:767px){.search-popup{border-radius:0;height:100%;width:100%}}.search-popup .popup-btn-close,.search-popup .search-icon{color:#999;font-size:18px;padding:0 10px}.search-popup .popup-btn-close{cursor:pointer}.search-popup .popup-btn-close:hover .fa{color:#222}.search-popup .search-header{background:#eee;border-top-left-radius:5px;border-top-right-radius:5px;display:flex;padding:5px}.search-popup input.search-input{background:0 0;border:0;outline:0;width:100%}.search-popup input.search-input::-webkit-search-cancel-button{display:none}.search-popup .search-result-container{height:calc(100% - 55px);overflow:auto;padding:5px 25px}.search-popup .search-result-container hr{margin:5px 0 10px}.search-popup .search-result-container hr:first-child{display:none}.search-popup .search-result-list{margin:0 5px;padding:0}.search-popup a.search-result-title{font-weight:700}.search-popup p.search-result{border-bottom:1px dashed #ccc;padding:5px 0}.search-popup .search-input-container{flex-grow:1;padding:2px}.search-popup .no-result{display:flex}.search-popup .search-result-list{width:100%}.search-popup .search-result-icon{color:#ccc;margin:auto}mark.search-keyword{background:0 0;border-bottom:1px dashed #ff2a2a;color:#ff2a2a;font-weight:700}.use-motion .animated{animation-fill-mode:none;visibility:inherit}.use-motion .sidebar .animated{animation-fill-mode:both}.btn{padding:0 10px}.headband{display:none}.pagination{text-align:left}@media (max-width:767px){.pagination{margin:80px 0 0;text-align:center}}.footer{background:var(--content-bg-color);color:var(--text-color);padding:10px 0}.footer-inner{text-align:left}@media (max-width:767px){.footer-inner{text-align:center}}.header-inner{align-items:center;display:flex;padding:20px 0}@media (max-width:767px){.header-inner{display:block;padding:10px 0}}.site-meta{line-height:normal}.site-meta .brand{padding:2px 1px}@media (max-width:767px){.site-meta .brand{display:block}}.site-meta .site-title{font-weight:bolder}.logo-line{background:var(--brand-color);display:block;height:2px;margin:0 auto;width:75%}@media (max-width:767px){.logo-line{display:none}}.use-motion .logo-line:first-of-type{transform:scaleX(0);transform-origin:left}.use-motion .logo-line:last-of-type{transform:scaleX(0);transform-origin:right}.site-subtitle{display:none}.site-nav{flex-grow:1}@media (max-width:767px){.site-nav{padding:10px 10px 0}}.menu{padding:0}.menu .menu-item{margin:0}@media (max-width:767px){.menu .menu-item{margin-top:5px}}.menu .menu-item a{border-radius:2px;padding:0 10px;transition-property:background}@media (max-width:767px){.menu .menu-item a{text-align:left}}.menu .menu-item .badge{background:#fff;border-radius:10px;color:#555;padding:1px 4px;text-shadow:1px 1px 0 rgba(0,0,0,.1)}.posts-expand.index .post-header{text-align:left}@media (max-width:767px){.posts-expand.index .post-header{text-align:center}}.posts-expand.index .post-meta-container{margin-top:5px}.posts-expand.index .post-meta{justify-content:flex-start}@media (max-width:767px){.posts-expand.index .post-meta{justify-content:center}}.posts-expand .post-eof{display:none}.posts-expand .post-block:not(:first-child){margin-top:120px}.posts-expand .post-header{margin-bottom:20px}.post-button,.posts-expand .post-tags{text-align:left}.posts-expand .post-tags a{background:var(--content-bg-color);border-bottom:0;padding:1px 5px}.posts-expand .post-tags a:hover{background:var(--menu-item-bg-color)}.posts-expand .post-nav{margin-top:40px}.post-button{margin-top:20px}.post-button .btn{background:0 0;border:0;border-bottom:2px solid var(--btn-default-border-color);padding:0;transition-property:border}.post-button .btn:hover{border-bottom-color:var(--btn-default-hover-border-color)}.main-inner{margin:0 auto;width:700px}@media (min-width:1200px){.main-inner{width:800px}}@media (min-width:1600px){.main-inner{width:900px}}@media (max-width:767px){.main-inner{padding-left:20px;padding-right:20px}.footer-inner,.header-inner,.main-inner{width:auto}}.main-inner{padding-bottom:80px}.post-block:first-of-type{padding-top:80px}@media (max-width:767px){.post-block:first-of-type{padding-top:60px}}@media (min-width:992px){.sidebar-active{padding-left:320px}}.sidebar{left:-320px;background:#222;bottom:0;box-shadow:inset 0 2px 6px #000;position:fixed;top:0;transition:all .2s ease-out;width:320px;z-index:1200}.sidebar-active .sidebar{left:0}.sidebar a{border-bottom-color:#555;color:#999}.sidebar a:hover{border-bottom-color:#eee;color:#eee}.links-of-author:not(:first-child){margin-top:15px}.links-of-author a{border-bottom-color:#555;display:inline-block;margin-bottom:10px;margin-right:10px;vertical-align:middle}.links-of-author a::before{background:#74f4ff;display:inline-block;margin-right:3px;transform:translateY(-2px);border-radius:50%;content:' ';height:4px;width:4px}.links-of-blogroll-item{padding:2px 10px}.links-of-blogroll-item a{box-sizing:border-box;display:inline-block;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sub-menu{margin:10px 0}.sub-menu .menu-item{display:inline-block}</style><noscript>
+    
+  </noscript>
+<script>function loadCss(l){var d=document,h=d.head,s=d.createElement('link');s.rel='stylesheet';s.href=l;!function e(f){if (d.body)return f();setTimeout(function(){e(f)})}(function(){h.appendChild(s);});}loadCss('/style.css');loadCss('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css');</script><noscript><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css"></noscript></head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">疯狂的茶几</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%8A%E5%85%B3%E9%94%AE%E8%B7%AF%E5%BE%84"><span class="nav-number">1.</span> <span class="nav-text">目标及关键路径</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E-PHP-7-4-x-%E7%A7%BB%E6%A4%8D%E5%88%B0-PHP-8-0-x"><span class="nav-number">2.</span> <span class="nav-text">从 PHP 7.4.x 移植到 PHP 8.0.x</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9%E7%9A%84%E5%8F%98%E6%9B%B4"><span class="nav-number">2.1.</span> <span class="nav-text">不向后兼容的变更</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-Core"><span class="nav-number">2.1.1.</span> <span class="nav-text">PHP Core</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Resource-to-Object-Migration"><span class="nav-number">2.1.2.</span> <span class="nav-text">Resource to Object Migration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#COM-and-Net-Windows"><span class="nav-number">2.1.3.</span> <span class="nav-text">COM and .Net (Windows)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CURL"><span class="nav-number">2.1.4.</span> <span class="nav-text">CURL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Date-and-Time"><span class="nav-number">2.1.5.</span> <span class="nav-text">Date and Time</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DOM"><span class="nav-number">2.1.6.</span> <span class="nav-text">DOM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enchant"><span class="nav-number">2.1.7.</span> <span class="nav-text">Enchant</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exif"><span class="nav-number">2.1.8.</span> <span class="nav-text">Exif</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Filter"><span class="nav-number">2.1.9.</span> <span class="nav-text">Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GD"><span class="nav-number">2.1.10.</span> <span class="nav-text">GD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GMP"><span class="nav-number">2.1.11.</span> <span class="nav-text">GMP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iconv"><span class="nav-number">2.1.12.</span> <span class="nav-text">Iconv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IMAP"><span class="nav-number">2.1.13.</span> <span class="nav-text">IMAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Internationalization-Functions"><span class="nav-number">2.1.14.</span> <span class="nav-text">Internationalization Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LDAP"><span class="nav-number">2.1.15.</span> <span class="nav-text">LDAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MBString"><span class="nav-number">2.1.16.</span> <span class="nav-text">MBString</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OCI8"><span class="nav-number">2.1.17.</span> <span class="nav-text">OCI8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ODBC"><span class="nav-number">2.1.18.</span> <span class="nav-text">ODBC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenSSL"><span class="nav-number">2.1.19.</span> <span class="nav-text">OpenSSL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Regular-Expressions-Perl-Compatible"><span class="nav-number">2.1.20.</span> <span class="nav-text">Regular Expressions (Perl-Compatible)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-Data-Objects-PDO"><span class="nav-number">2.1.21.</span> <span class="nav-text">PHP Data Objects (PDO)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PDO-ODBC"><span class="nav-number">2.1.22.</span> <span class="nav-text">PDO ODBC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PDO-MySQL"><span class="nav-number">2.1.23.</span> <span class="nav-text">PDO MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PostgreSQL-PGSQL-PDO-PGSQL"><span class="nav-number">2.1.24.</span> <span class="nav-text">PostgreSQL (PGSQL) / PDO PGSQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phar"><span class="nav-number">2.1.25.</span> <span class="nav-text">Phar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reflection"><span class="nav-number">2.1.26.</span> <span class="nav-text">Reflection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sockets"><span class="nav-number">2.1.27.</span> <span class="nav-text">Sockets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Standard-PHP-Library-SPL"><span class="nav-number">2.1.28.</span> <span class="nav-text">Standard PHP Library (SPL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Standard-Library"><span class="nav-number">2.1.29.</span> <span class="nav-text">Standard Library</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sysvsem"><span class="nav-number">2.1.30.</span> <span class="nav-text">Sysvsem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tidy"><span class="nav-number">2.1.31.</span> <span class="nav-text">Tidy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tokenizer"><span class="nav-number">2.1.32.</span> <span class="nav-text">Tokenizer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XMLReader"><span class="nav-number">2.1.33.</span> <span class="nav-text">XMLReader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XML-RPC"><span class="nav-number">2.1.34.</span> <span class="nav-text">XML-RPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zip"><span class="nav-number">2.1.35.</span> <span class="nav-text">Zip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zlib"><span class="nav-number">2.1.36.</span> <span class="nav-text">Zlib</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-PHP-Test-Packs"><span class="nav-number">2.1.37.</span> <span class="nav-text">Windows PHP Test Packs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LibXML"><span class="nav-number">2.1.38.</span> <span class="nav-text">LibXML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EBCDIC"><span class="nav-number">2.1.39.</span> <span class="nav-text">EBCDIC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SAPI"><span class="nav-number">2.1.40.</span> <span class="nav-text">SAPI</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E7%89%B9%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">新特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-Core-v2"><span class="nav-number">2.2.1.</span> <span class="nav-text">PHP Core</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Date-and-Time-v2"><span class="nav-number">2.2.2.</span> <span class="nav-text">Date and Time</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DOM-v2"><span class="nav-number">2.2.3.</span> <span class="nav-text">DOM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Filter-v2"><span class="nav-number">2.2.4.</span> <span class="nav-text">Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enchant-v2"><span class="nav-number">2.2.5.</span> <span class="nav-text">Enchant</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FPM"><span class="nav-number">2.2.6.</span> <span class="nav-text">FPM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash"><span class="nav-number">2.2.7.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Internationalization-Functions-v2"><span class="nav-number">2.2.8.</span> <span class="nav-text">Internationalization Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LDAP-v2"><span class="nav-number">2.2.9.</span> <span class="nav-text">LDAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OPcache"><span class="nav-number">2.2.10.</span> <span class="nav-text">OPcache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenSSL-v2"><span class="nav-number">2.2.11.</span> <span class="nav-text">OpenSSL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Regular-Expressions-Perl-Compatible-v2"><span class="nav-number">2.2.12.</span> <span class="nav-text">Regular Expressions (Perl-Compatible)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reflection-v2"><span class="nav-number">2.2.13.</span> <span class="nav-text">Reflection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQLite3"><span class="nav-number">2.2.14.</span> <span class="nav-text">SQLite3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Standard-Library-v2"><span class="nav-number">2.2.15.</span> <span class="nav-text">Standard Library</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tokenizer-v2"><span class="nav-number">2.2.16.</span> <span class="nav-text">Tokenizer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zip-v2"><span class="nav-number">2.2.17.</span> <span class="nav-text">Zip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSON"><span class="nav-number">2.2.18.</span> <span class="nav-text">JSON</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GD-v2"><span class="nav-number">2.2.19.</span> <span class="nav-text">GD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SimpleXML"><span class="nav-number">2.2.20.</span> <span class="nav-text">SimpleXML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#INI-%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E7%9A%84%E5%8F%98%E6%9B%B4"><span class="nav-number">2.2.21.</span> <span class="nav-text">INI 文件处理的变更</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="疯狂的茶几" src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">疯狂的茶几</p>
+  <div class="site-description" itemprop="description">懒人一个</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tomhjx" title="GitHub → https://github.com/tomhjx" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tom_hejiaxi@163.com" title="E-Mail → mailto:tom_hejiaxi@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/tomhjx" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.tomhjx.top/2020/11/26/PHP-8-0-x/">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="疯狂的茶几">
+      <meta itemprop="description" content="懒人一个">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯狂的茶几">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PHP 8.0.x
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-26 15:00:00" itemprop="dateCreated datePublished" datetime="2020-11-26T15:00:00+08:00">2020-11-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2026-02-15 16:34:35" itemprop="dateModified" datetime="2026-02-15T16:34:35+08:00">2026-02-15</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>40k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>37 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="目标及关键路径"><a class="header-anchor" href="#目标及关键路径">¶</a>目标及关键路径</h1>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/releases/8.0/zh.php">https://www.php.net/releases/8.0/zh.php</a></p>
+</blockquote>
+<ul>
+<li>提升性能
+<ul>
+<li>基于缓存前置思想，使用CPU机器码缓存，绕过Zend VM及其过程开销来尽可能提升性能
+<ul>
+<li>JIT</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="从-PHP-7-4-x-移植到-PHP-8-0-x"><a class="header-anchor" href="#从-PHP-7-4-x-移植到-PHP-8-0-x">¶</a>从 PHP 7.4.x 移植到 PHP 8.0.x</h1>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://php.watch/versions/8.0">PHP 8.0: What’s New and Changed</a><br>
+<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/migration80.php">PHP Manual</a></p>
+</blockquote>
+<h2 id="不向后兼容的变更"><a class="header-anchor" href="#不向后兼容的变更">¶</a>不向后兼容的变更</h2>
+<h3 id="PHP-Core"><a class="header-anchor" href="#PHP-Core">¶</a>PHP Core</h3>
+<ul>
+<li>
+<p>字符串与数字的比较</p>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/saner-numeric-strings"><sup>v8.0.0</sup></a> 数字与非数字形式的字符串之间的非严格比较现在将首先将数字转为字符串，然后比较这两个字符串。 数字与数字形式的字符串之间的比较仍然像之前那样进行。 请注意，这意味着 0 == “not-a-number” 现在将被认为是 false 。</p>
+<table>
+<thead>
+<tr>
+<th>Comparison</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0 == "0"</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>true</code></strong></td>
+</tr>
+<tr>
+<td><code>0 == "0.0"</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>true</code></strong></td>
+</tr>
+<tr>
+<td><code>0 == "foo"</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>false</code></strong></td>
+</tr>
+<tr>
+<td><code>0 == ""</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>false</code></strong></td>
+</tr>
+<tr>
+<td><code>42 == " 42"</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>true</code></strong></td>
+</tr>
+<tr>
+<td><code>42 == "42foo"</code></td>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>false</code></strong></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5371"><sup>v8.0.0</sup></a> <code>match</code> 现在是一个保留字。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/match_expression_v2">PHP RFC: Match expression v2</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5925"><sup>v8.0.0</sup></a> 断言（Assertion）失败现在默认抛出异常。如果想要改回之前的行为，可以在 INI 设置中设置 <code>assert.exception=0</code> 。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/1a7c0d52dc31623bd88a87e03849ab915275c49d"><sup>8.0.0</sup></a> 与类名相同的方法名将不再被当做构造方法。应该使用<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.decon.php#object.construct">__construct()</a> 来取代它。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/6c73b50cf6cf71be26700ce168d5e69350637d71"><sup>8.0.0</sup></a> 不再允许通过静态调用的方式去调用非静态方法。因此<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.is-callable.php">is_callable()</a>在检查一个类名与非静态方法 时将返回失败（应当检查一个类的实例）。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.type-juggling.php"><sup>v8.0.0</sup></a> <code>(real)</code> 和 <code>(unset)</code> 转换已被移除。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/920b4b249f71e6cbfd795f81c6a08126a33c659e"><sup>v8.0.0</sup></a> The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/errorfunc.configuration.php#ini.track-errors">track_errors</a> ini directive has been removed. This means that php_errormsg is no longer available. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.error-get-last.php">error_get_last()</a> function may be used instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/3d39479f4d7c86c66aa92fc5d0d97fb660109ee9"><sup>v8.0.0</sup></a> The ability to define case-insensitive constants has been removed. The third argument to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.define.php">define()</a> may no longer be <code>true</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/0dfd918ee7a3520836b875b8c24f0a5f98fbee15"><sup>v8.0.0</sup></a> The ability to specify an autoloader using an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.autoload.php">__autoload()</a> function has been removed. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.spl-autoload-register.php">spl_autoload_register()</a> should be used instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/2f1f34952e9a0dfb3adcbec82ba69f4ac82b3a3d"><sup>v8.0.0</sup></a> The <code>errcontext</code> argument will no longer be passed to custom error handlers set with <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.set-error-handler.php">set_error_handler()</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/ee16d99504f0014c3d292809da927fb622293f41"><sup>v8.0.0</sup></a> <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.create-function.php">create_function()</a> has been removed. Anonymous functions may be used instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/6db97f5e3ea3ac9774a06981226a0fe1bca02b38"><sup>v8.0.0</sup></a> <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.each.php">each()</a> has been removed. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/control-structures.foreach.php">foreach</a> or <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.arrayiterator.php">ArrayIterator</a> should be used instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/87fefd165a29091c3cb462431529107189c12d55"><sup>v8.0.0</sup></a> The ability to unbind this from closures that were created from a method, using <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/closure.fromcallable.php">Closure::fromCallable()</a> or <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionmethod.getclosure.php">ReflectionMethod::getClosure()</a>, has been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/87fefd165a29091c3cb462431529107189c12d55"><sup>v8.0.0</sup></a> The ability to unbind this from proper closures that contain uses of this has also been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/c46b2ed677aecfc2f07993eefad0326f31c5cc44"><sup>v8.0.0</sup></a> The ability to use <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-key-exists.php">array_key_exists()</a> with objects has been removed. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.isset.php">isset()</a> or <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.property-exists.php">property_exists()</a> may be used instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/14bdb0cfc7b62205c75f6d5c783e343259796776"><sup>v8.0.0</sup></a> The behavior of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-key-exists.php">array_key_exists()</a> regarding the type of the <code>key</code> parameter has been made consistent with <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.isset.php">isset()</a> and normal array access. All key types now use the usual coercions and array/object keys throw a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.typeerror.php">TypeError</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/6732028273b109cb342387ab5580c367f629d0ac"><sup>v8.0.0</sup></a> Any array that has a number n as its first numeric key will use n+1 for its next implicit key, even if n is negative.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/negative_array_index">PHP RFC: Arrays starting with a negative index</a><br>
+<a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/negative-array-keys">PHP 8.0: Implicit negative array key increments do not skip negative numbers</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/ea5854ca8c1193aacaee6fe059b2bfba636769e0"><sup>v8.0.0</sup></a> The default error_reporting level is now <code>E_ALL</code>. Previously it excluded <code>E_NOTICE</code> and <code>E_DEPRECATED</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/790ed7d540aa04d22b1fc72a1f17e57ed6ef94e7"><sup>v8.0.0</sup></a> <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/errorfunc.configuration.php#ini.display-startup-errors">display_startup_errors</a> is now enabled by default.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/5c24f8042d46f3dfbe8eb122a64792758fff5271"><sup>v8.0.0</sup></a> Using parent inside a class that has no parent will now result in a fatal compile-time error.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/3685"><sup>v8.0.0</sup></a> The <code>@</code> operator will no longer silence fatal errors (<code>E_ERROR</code>, <code>E_CORE_ERROR</code>, <code>E_COMPILE_ERROR</code>, <code>E_USER_ERROR</code>, <code>E_RECOVERABLE_ERROR</code>, <code>E_PARSE</code>). Error handlers that expect error_reporting to be <code>0</code> when <code>@</code> is used, should be adjusted to use a mask check instead:</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;Replace
+function&nbsp;my_error_handler($err_no,&nbsp;$err_msg,&nbsp;$filename,&nbsp;$linenum)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(error_reporting()&nbsp;==&nbsp;0)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;&nbsp;//&nbsp;Silenced
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;...
+}
+
+//&nbsp;With
+function&nbsp;my_error_handler($err_no,&nbsp;$err_msg,&nbsp;$filename,&nbsp;$linenum)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!(error_reporting()&nbsp;&amp;&nbsp;$err_no))&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;&nbsp;//&nbsp;Silenced
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;...
+}
+?&gt;
+</code></pre>
+<p>Additionally, care should be taken that error messages are not displayed in production environments, which can result in information leaks. Please ensure that <code>display_errors=Off</code> is used in conjunction with error logging.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/fatal-error-suppression">PHP 8.0: @ Error Suppression operator does not silent fatal errors</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5394"><sup>v8.0.0</sup></a> <code>#[</code> is no longer interpreted as the start of a comment, as this syntax is now used for attributes.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/attributes_v2">PHP RFC: Attributes v2</a><br>
+<a target="_blank" rel="noopener" href="https://externals.io/message/108907">Discussion: Attributes v2</a><br>
+<a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/attributes">PHP 8.0: Attributes</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/fd2db1192997f5778139ea8e9d25189c7c08af2c"><sup>v8.0.0</sup></a> Inheritance errors due to incompatible method signatures (<a target="_blank" rel="noopener" href="https://microsoft.github.io/language-server-protocol/">LSP</a> violations) will now always generate a fatal error. Previously a warning was generated in some cases.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/lsp_errors">PHP RFC: Always generate fatal error for incompatible method signatures</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/4000">Github Pull Request: Always generate fatal error for LSP failures #4000</a><br>
+<a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/lsp-errors">PHP 8.0: Fatal errors on incompatible method signatures</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/3b23694aac62ad9c2dfdb60cafb304f9fc0b7c04"><sup>v7.4.0</sup></a> The precedence of the concatenation operator has changed relative to bitshifts and addition as well as subtraction.</p>
+<pre><code class="language-php">&lt;?php
+echo&nbsp;"Sum:&nbsp;"&nbsp;.&nbsp;$a&nbsp;+&nbsp;$b;
+//&nbsp;was&nbsp;previously&nbsp;interpreted&nbsp;as:
+echo&nbsp;("Sum:&nbsp;"&nbsp;.&nbsp;$a)&nbsp;+&nbsp;$b;
+//&nbsp;is&nbsp;now&nbsp;interpreted&nbsp;as:
+echo&nbsp;"Sum:"&nbsp;.&nbsp;($a&nbsp;+&nbsp;$b);
+?&gt;
+</code></pre>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/concatenation_precedence">PHP RFC: Change the precedence of the concatenation operator</a><br>
+<a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/contact-add-sub-precedence">PHP 8.0: +/- operators take higher precedence when used with concat (.) operator</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/cdd4e591a46ad171aa5c0776671788cd710a9d4b"><sup>v8.0.0</sup></a> Arguments with a default value that resolves to <code>null</code> at runtime will no longer implicitly mark the argument type as nullable. Either an explicit nullable type, or an explicit <code>null</code> default value has to be used instead.</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;Replace
+function&nbsp;test(int&nbsp;$arg&nbsp;=&nbsp;CONST_RESOLVING_TO_NULL)&nbsp;{}
+//&nbsp;With
+function&nbsp;test(?int&nbsp;$arg&nbsp;=&nbsp;CONST_RESOLVING_TO_NULL)&nbsp;{}
+//&nbsp;Or
+function&nbsp;test(int&nbsp;$arg&nbsp;=&nbsp;null)&nbsp;{}
+?&gt;
+</code></pre>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/4720">Github Pull Request: Don’t make argument nullable based on AST null initializer #4720</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/e8b0163e0b6632c77cb8a3e863671c87793dbfc4"><sup>v8.0.0</sup></a> A number of warnings have been converted into <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.error.php">Error</a> exceptions:</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/engine_warnings">PHP RFC: Reclassifying engine warnings</a></p>
+</blockquote>
+<ul>
+<li>Attempting to write to a property of a non-object. Previously this implicitly created an stdClass object for null, false and empty strings.</li>
+<li>Attempting to append an element to an array for which the PHP_INT_MAX key is already used.</li>
+<li>Attempting to use an invalid type (array or object) as an array key or string offset.</li>
+<li>Attempting to write to an array index of a scalar value.</li>
+<li>Attempting to unpack a non-array/Traversable.</li>
+<li>Attempting to access unqualified constants which are undefined. Previously, unqualified constant accesses resulted in a warning and were interpreted as strings.</li>
+</ul>
+<p>A number of notices have been converted into warnings:</p>
+<ul>
+<li>Attempting to read an undefined variable.</li>
+<li>Attempting to read an undefined property.</li>
+<li>Attempting to read an undefined array key.</li>
+<li>Attempting to read a property of a non-object.</li>
+<li>Attempting to access an array index of a non-array.</li>
+<li>Attempting to convert an array to string.</li>
+<li>Attempting to use a resource as an array key.</li>
+<li>Attempting to use null, a boolean, or a float as a string offset.</li>
+<li>Attempting to read an out-of-bounds string offset.</li>
+<li>Attempting to assign an empty string to a string offset.</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/66659d6cf6ae2547c0e582a6e3aa0d1ee0e3835f"><sup>v8.0.0</sup></a> Attempting to assign multiple bytes to a string offset will now emit a warning.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/d44cf9b539c5dfbd3ff0295bac25165e79214e09"><sup>v8.0.0</sup></a> Unexpected characters in source files (such as NUL bytes outside of strings) will now result in a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.parseerror.php">ParseError</a> exception instead of a compile warning.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/4767">Github Pull Request: Replace “unexpected character” warning with ParseError #4767</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/db233501ff9d56765ef4a870b777a643c2136711"><sup>v8.0.0</sup></a>  Uncaught exceptions now go through “clean shutdown”, which means that destructors will be called after an uncaught exception.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/64b40f69dca440e86e608847a39b795aedf75861"><sup>v8.0.0</sup></a> The compile time fatal error “Only variables can be passed by reference” has been delayed until runtime, and converted into an “Argument cannot be passed by reference” <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.error.php">Error</a> exception.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/64b40f69dca440e86e608847a39b795aedf75861"><sup>v8.0.0</sup></a> Some “Only variables should be passed by reference” notices have been converted to “Argument cannot be passed by reference” exception.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/72bd55902d1908857f47555ad69458861e1acd94"><sup>v8.0.0</sup></a> The generated name for anonymous classes has changed. It will now include the name of the first parent or interface:</p>
+<pre><code class="language-php">&lt;?php
+new&nbsp;class&nbsp;extends&nbsp;ParentClass&nbsp;{};
+//&nbsp;-&gt;&nbsp;ParentClass@anonymous
+new&nbsp;class&nbsp;implements&nbsp;FirstInterface,&nbsp;SecondInterface&nbsp;{};
+//&nbsp;-&gt;&nbsp;FirstInterface@anonymous
+new&nbsp;class&nbsp;{};
+//&nbsp;-&gt;&nbsp;class@anonymous
+?&gt;
+</code></pre>
+<p>The name shown above is still followed by a NUL byte and a unique suffix.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5153">Github Pull Request: Improve generated names for anonymous classes #5153</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/fff5771cccaca49565c90349320f3c06cbe19328"><sup>v8.0.0</sup></a> Non-absolute trait method references in trait alias adaptations are now required to be unambiguous:</p>
+<pre><code class="language-php">&lt;?php
+class&nbsp;X&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;use&nbsp;T1,&nbsp;T2&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;func&nbsp;as&nbsp;otherFunc;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;function&nbsp;func()&nbsp;{}
+}
+?&gt;
+</code></pre>
+<p>If both <code>T1::func()</code> and <code>T2::func()</code> exist, this code was previously silently accepted, and func was assumed to refer to <code>T1::func</code>. Now it will generate a fatal error instead, and either <code>T1::func</code> or <code>T2::func</code> needs to be written explicitly.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5232">Github Pull Request: Require non-absolute trait method refs to be unambiguous #5232</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/f74e30c07c2a94921fbfb7b8936324707505bd75"><sup>v8.0.0</sup></a> The signature of abstract methods defined in traits is now checked against the implementing class method:</p>
+<pre><code class="language-php">
+&lt;?php
+trait&nbsp;MyTrait&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;abstract&nbsp;private&nbsp;function&nbsp;neededByTrait():&nbsp;string;
+}
+
+class&nbsp;MyClass&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;use&nbsp;MyTrait;
+
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Error,&nbsp;because&nbsp;of&nbsp;return&nbsp;type&nbsp;mismatch.
+&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;function&nbsp;neededByTrait():&nbsp;int&nbsp;{&nbsp;return&nbsp;42;&nbsp;}
+}
+?&gt;
+</code></pre>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/abstract_trait_method_validation">PHP RFC: Validation for abstract trait methods</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5068">Github Pull Request: Check abstract method signatures coming from traits #5068</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/53eee290b6f5ca531aef19885a392c939013ce36"><sup>v8.0.0</sup></a> Disabled functions are now treated exactly like non-existent functions. Calling a disabled function will report it as unknown, and redefining a disabled function is now possible.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5473">Github Pull Request: Completely remove disabled functions from function table #5473</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/69888c3ff1f2301ead8e37b23ff8481d475e29d2"><sup>v8.0.0</sup></a> <code>data://</code> stream wrappers are no longer writable, which matches the documented behavior.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/5bc1e224dbd660cea99c222baf8bd3c215d25073"><sup>v8.0.0</sup></a> The arithmetic and bitwise operators <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>**</code>, <code>%</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>~</code>, <code>++</code>, <code>--</code> will now consistently throw a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.typeerror.php">TypeError</a> when one of the operands is an array, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a> or non-overloaded object. The only exception to this is the array <code>+</code> array merge operation, which remains supported.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/arithmetic_operator_type_checks">PHP RFC: Stricter type checks for arithmetic/bitwise operators</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5331">Github Pull Request: Make numeric operations on resources, arrays and objects type errors #5331</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/4a816584a4d483722485e5163396ea1bb2a6aee7"><sup>v8.0.0</sup></a> Float to string casting will now always behave locale-independently.</p>
+<pre><code class="language-php">&lt;?php
+setlocale(LC_ALL,&nbsp;"de_DE");
+$f&nbsp;=&nbsp;3.14;
+echo&nbsp;$f,&nbsp;"\n";
+//&nbsp;Previously:&nbsp;3,14
+//&nbsp;Now:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.14
+?&gt;
+</code></pre>
+<p>See <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.printf.php">printf()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.number-format.php">number_format()</a> and <strong>NumberFormatter()</strong> for ways to customize number formatting.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/locale_independent_float_to_string">PHP RFC: Locale-independent float to string cast</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/5224">Github Pull Request: Make float to string conversions locale-independent #5224</a></p>
+</blockquote>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://github.com/php/php-src/commit/bc3ee2eeea1a3ca3ff33263861758d6ed54f3b16"><sup>v8.0.0</sup></a> Support for deprecated curly braces for offset access has been removed.</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;Instead&nbsp;of:
+$array{0};
+$array{"key"};
+//&nbsp;Write:
+$array[0];
+$array["key"];
+?&gt;
+</code></pre>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/deprecate_curly_braces_array_access">PHP RFC: Deprecate curly brace syntax for accessing array elements and string offsets</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/php/php-src/pull/4416">Github Pull Request: Deprecate curly brace syntax for array/string offset access #4416</a></p>
+</blockquote>
+</li>
+<li>
+<p>Applying the final modifier on a private method will now produce a warning unless that method is the constructor.</p>
+</li>
+<li>
+<p>If an object constructor <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.exit.php">exit()</a>s, the object destructor will no longer be called. This matches the behavior when the constructor throws.</p>
+</li>
+<li>
+<p>Namespaced names can no longer contain whitespace: While <code>Foo\Bar</code> will be recognized as a namespaced name, <code>Foo \ Bar</code> will not. Conversely, reserved keywords are now permitted as namespace segments, which may also change the interpretation of code: <code>new\x</code> is now the same as <code>constant('new\x')</code>, not <code>new \x()</code>.</p>
+</li>
+<li>
+<p>Nested ternaries now require explicit parentheses.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.debug-backtrace.php">debug_backtrace()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/exception.gettrace.php">Exception::getTrace()</a> will no longer provide references to arguments. It will not be possible to change function arguments through the backtrace.</p>
+</li>
+<li>
+<p>Numeric string handling has been altered to be more intuitive and less error-prone. Trailing whitespace is now allowed in numeric strings for consistency with how leading whitespace is treated. This mostly affects:</p>
+<ul>
+<li>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.is-numeric.php">is_numeric()</a> function</li>
+<li>String-to-string comparisons</li>
+<li>Type declarations</li>
+<li>Increment and decrement operations</li>
+</ul>
+<p>The concept of a “leading-numeric string” has been mostly dropped; the cases where this remains exist in order to ease migration. Strings which emitted an <code>E_NOTICE</code> “A non well-formed numeric value encountered” will now emit an <code>E_WARNING</code> “A non-numeric value encountered” and all strings which emitted an <code>E_WARNING</code> “A non-numeric value encountered” will now throw a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.typeerror.php">TypeError</a>. This mostly affects:</p>
+<ul>
+<li>Arithmetic operations</li>
+<li>Bitwise operations</li>
+</ul>
+<p>This <code>E_WARNING</code> to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.typeerror.php">TypeError</a> change also affects the <code>E_WARNING</code> “Illegal string offset ‘string’” for illegal string offsets. The behavior of explicit casts to int/float from strings has not been changed.</p>
+</li>
+<li>
+<p>Magic Methods will now have their arguments and return types checked if they have them declared. The signatures should match the following list:</p>
+<ul>
+<li><code>__call(string $name, array $arguments): mixed</code></li>
+<li><code>__callStatic(string $name, array $arguments): mixed</code></li>
+<li><code>__clone(): void</code></li>
+<li><code>__debugInfo(): ?array</code></li>
+<li><code>__get(string $name): mixed</code></li>
+<li><code>__invoke(mixed $arguments): mixed</code></li>
+<li><code>__isset(string $name): bool</code></li>
+<li><code>__serialize(): array</code></li>
+<li><code>__set(string $name, mixed $value): void</code></li>
+<li><code>__set_state(array $properties): object</code></li>
+<li><code>__sleep(): array</code></li>
+<li><code>__unserialize(array $data): void</code></li>
+<li><code>__unset(string $name): void</code></li>
+<li><code>__wakeup(): void</code></li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.call-user-func-array.php">call_user_func_array()</a> array keys will now be interpreted as parameter names, instead of being silently ignored.</p>
+</li>
+<li>
+<p>Declaring a function called <code>assert()</code> inside a namespace is no longer allowed, and issues <code>E_COMPILE_ERROR</code>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.assert.php">assert()</a> function is subject to special handling by the engine, which may lead to inconsistent behavior when defining a namespaced function with the same name.</p>
+</li>
+<li>
+<p>如果带有默认值的参数后面跟着一个必要的参数，那么默认值就会无效。这在 PHP 8.0.0 中已被废弃，通常可以通过删除默认值，不影响现有功能：</p>
+<pre><code class="language-php">&lt;?php
+function&nbsp;test($a&nbsp;=&nbsp;[],&nbsp;$b)&nbsp;{}&nbsp;//&nbsp;之前
+function&nbsp;test($a,&nbsp;$b)&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;之后
+?&gt;
+</code></pre>
+<p>这条规则的一个例外是 <code>Type $param = null</code> 形式的参数，其中 null 的默认值使得类型隐式为空。这种用法仍然是允许的，但仍建议使用显式可空类型。</p>
+<pre><code class="language-php">&lt;?php
+function&nbsp;test(A&nbsp;$a&nbsp;=&nbsp;null,&nbsp;$b)&nbsp;{}&nbsp;//&nbsp;旧写法，仍可用
+function&nbsp;test(?A&nbsp;$a,&nbsp;$b)&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;推荐写法
+?&gt;
+</code></pre>
+</li>
+<li>
+<p>参数 <code>exclude_disabled</code> 不能设置为 <code>false</code> 来调用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-defined-functions.php">get_defined_functions()</a>，该参数已被废弃，不再起作用。 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-defined-functions.php">get_defined_functions()</a> 绝不会再包含禁用的函数。</p>
+</li>
+</ul>
+<h3 id="Resource-to-Object-Migration"><a class="header-anchor" href="#Resource-to-Object-Migration">¶</a>Resource to Object Migration</h3>
+<p>Several <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>s have been migrated to objects. Return value checks using <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.is-resource.php">is_resource()</a> should be replaced with checks for <code>false</code>.</p>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-init.php">curl_init()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlhandle.php">CurlHandle</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-close.php">curl_close()</a> function no longer has an effect, instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlhandle.php">CurlHandle</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-multi-init.php">curl_multi_init()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlmultihandle.php">CurlMultiHandle</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-multi-close.php">curl_multi_close()</a> function no longer has an effect, instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlmultihandle.php">CurlMultiHandle</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-share-init.php">curl_share_init()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlsharehandle.php">CurlShareHandle</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-share-close.php">curl_share_close()</a> function no longer has an effect, instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.curlsharehandle.php">CurlShareHandle</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-init.php">enchant_broker_init()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.enchantbroker.php">EnchantBroker</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-request-dict.php">enchant_broker_request_dict()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-request-pwl-dict.php">enchant_broker_request_pwl_dict()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.enchantdictionary.php">EnchantDictionary</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p>The GD extension now uses <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.gdimage.php">GdImage</a> objects as the underlying data structure for images, rather than <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>s. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imagedestroy.php">imagedestroy()</a> function no longer has an effect; instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.gdimage.php">GdImage</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-x509-read.php">openssl_x509_read()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-csr-sign.php">openssl_csr_sign()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.opensslcertificate.php">OpenSSLCertificate</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-x509-free.php">openssl_x509_free()</a> function is deprecated and no longer has an effect, instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.opensslcertificate.php">OpenSSLCertificate</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-csr-new.php">openssl_csr_new()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.opensslcertificatesigningrequest.php">OpenSSLCertificateSigningRequest</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-pkey-new.php">openssl_pkey_new()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.opensslasymmetrickey.php">OpenSSLAsymmetricKey</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-pkey-free.php">openssl_pkey_free()</a> function is deprecated and no longer has an effect, instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.opensslasymmetrickey.php">OpenSSLAsymmetricKey</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.shmop-open.php">shmop_open()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.shmop.php">Shmop</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.shmop-close.php">shmop_close()</a> function no longer has an effect, and is deprecated; instead the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.shmop.php">Shmop</a> instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-create.php">socket_create()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-create-listen.php">socket_create_listen()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-accept.php">socket_accept()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-import-stream.php">socket_import_stream()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-addrinfo-connect.php">socket_addrinfo_connect()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-addrinfo-bind.php">socket_addrinfo_bind()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-wsaprotocol-info-import.php">socket_wsaprotocol_info_import()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.socket.php">Socket</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-addrinfo-lookup.php">socket_addrinfo_lookup()</a> will now return an array of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.addressinfo.php">AddressInfo</a> objects rather than <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>s.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.msg-get-queue.php">msg_get_queue()</a> will now return an SysvMessageQueue object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.sem-get.php">sem_get()</a> will now return an SysvSemaphore object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.shm-attach.php">shm_attach()</a> will now return an SysvSharedMemory object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.xml-parser-create.php">xml_parser_create()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.xml-parser-create-ns.php">xml_parser_create_ns()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.xmlparser.php">XMLParser</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.xml-parser-free.php">xml_parser_free()</a> function no longer has an effect, instead the XmlParser instance is automatically destroyed if it is no longer referenced.</p>
+</li>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/book.xmlwriter.php">XMLWriter</a> functions now accept and return, respectively, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.xmlwriter.php">XMLWriter</a> objects instead of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>s.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.inflate-init.php">inflate_init()</a> will now return an <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.inflatecontext.php">InflateContext</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.deflate-init.php">deflate_init()</a> will now return a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.deflatecontext.php">DeflateContext</a> object rather than a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.resource.php">资源(resource)</a>.</p>
+</li>
+</ul>
+<h3 id="COM-and-Net-Windows"><a class="header-anchor" href="#COM-and-Net-Windows">¶</a>COM and .Net (Windows)</h3>
+<ul>
+<li>The ability to import case-insensitive constants from type libraries has been removed. The second argument to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.com-load-typelib.php">com_load_typelib()</a> may no longer be false; <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/com.configuration.php#ini.com.autoregister-casesensitive">com.autoregister_casesensitive</a> may no longer be disabled; case-insensitive markers in <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/com.configuration.php#ini.com.typelib-file">com.typelib_file</a> are ignored.</li>
+</ul>
+<h3 id="CURL"><a class="header-anchor" href="#CURL">¶</a>CURL</h3>
+<ul>
+<li>
+<p><code>CURLOPT_POSTFIELDS</code> no longer accepts objects as arrays. To interpret an object as an array, perform an explicit <code>(array)</code> cast. The same applies to other options accepting arrays as well.</p>
+</li>
+<li>
+<p>现在 CURL 扩展要求 libcurl 版本至少为 7.29.0。</p>
+</li>
+<li>
+<p>移除了 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.curl-version.php">curl_version()</a> 废弃的参数 <code>version</code>。</p>
+</li>
+</ul>
+<h3 id="Date-and-Time"><a class="header-anchor" href="#Date-and-Time">¶</a>Date and Time</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mktime.php">mktime()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gmmktime.php">gmmktime()</a> now require at least one argument. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.time.php">time()</a> can be used to get the current timestamp.</li>
+</ul>
+<h3 id="DOM"><a class="header-anchor" href="#DOM">¶</a>DOM</h3>
+<ul>
+<li>
+<p>Unimplemented classes from the DOM extension that had no behavior and contained test data have been removed. These classes have also been removed in the latest version of the DOM standard:</p>
+<ul>
+<li>DOMNameList</li>
+<li>DomImplementationList</li>
+<li>DOMConfiguration</li>
+<li>DomError</li>
+<li>DomErrorHandler</li>
+<li>DOMImplementationSource</li>
+<li>DOMLocator</li>
+<li>DOMUserDataHandler</li>
+<li>DOMTypeInfo</li>
+</ul>
+</li>
+</ul>
+<h3 id="Enchant"><a class="header-anchor" href="#Enchant">¶</a>Enchant</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-list-dicts.php">enchant_broker_list_dicts()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-describe.php">enchant_broker_describe()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-suggest.php">enchant_dict_suggest()</a> will now return an empty array instead of <code>null</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-set-dict-path.php">enchant_broker_set_dict_path()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-get-dict-path.php">enchant_broker_get_dict_path()</a> are deprecated, because that functionality is neither available in libenchant &lt; 1.5 nor in libenchant-2.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-add-to-personal.php">enchant_dict_add_to_personal()</a> is deprecated; use <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-add.php">enchant_dict_add()</a> instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-is-in-session.php">enchant_dict_is_in_session()</a> is deprecated; use <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-is-added.php">enchant_dict_is_added()</a> instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-free.php">enchant_broker_free()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-broker-free-dict.php">enchant_broker_free_dict()</a> are deprecated; unset the object instead.</p>
+</li>
+<li>
+<p>The <code>ENCHANT_MYSPELL</code> and <code>ENCHANT_ISPELL</code> constants are deprecated.</p>
+</li>
+<li>
+<p>现在环境允许时，enchant 会默认使用 libenchant-2。 仍然支持 libenchant 1，但已经废弃，并将在未来移除。</p>
+</li>
+</ul>
+<h3 id="Exif"><a class="header-anchor" href="#Exif">¶</a>Exif</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.read-exif-data.php">read_exif_data()</a> has been removed; <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.exif-read-data.php">exif_read_data()</a> should be used instead.</li>
+</ul>
+<h3 id="Filter"><a class="header-anchor" href="#Filter">¶</a>Filter</h3>
+<ul>
+<li>
+<p>The <code>FILTER_FLAG_SCHEME_REQUIRED</code> and <code>FILTER_FLAG_HOST_REQUIRED</code> flags for the <code>FILTER_VALIDATE_URL</code> filter have been removed. The <code>scheme</code> and <code>host</code> are (and have been) always required.</p>
+</li>
+<li>
+<p>The <code>INPUT_REQUEST</code> and <code>INPUT_SESSION</code> source for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.filter-input.php">filter_input()</a> etc. have been removed. These were never implemented and their use always generated a warning.</p>
+</li>
+</ul>
+<h3 id="GD"><a class="header-anchor" href="#GD">¶</a>GD</h3>
+<ul>
+<li>
+<p>The deprecated functions <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.image2wbmp.php">image2wbmp()</a> has been removed.</p>
+</li>
+<li>
+<p>The deprecated functions <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.png2wbmp.php">png2wbmp()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.jpeg2wbmp.php">jpeg2wbmp()</a> have been removed.</p>
+</li>
+<li>
+<p>The default <code>mode</code> parameter of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imagecropauto.php">imagecropauto()</a> no longer accepts <code>-1</code>. <code>IMG_CROP_DEFAULT</code> should be used instead.</p>
+</li>
+<li>
+<p>On Windows, php_gd2.dll has been renamed to php_gd.dll.</p>
+</li>
+</ul>
+<h3 id="GMP"><a class="header-anchor" href="#GMP">¶</a>GMP</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gmp-random.php">gmp_random()</a> has been removed. One of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gmp-random-range.php">gmp_random_range()</a> or <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gmp-random-bits.php">gmp_random_bits()</a> should be used instead.</li>
+</ul>
+<h3 id="Iconv"><a class="header-anchor" href="#Iconv">¶</a>Iconv</h3>
+<ul>
+<li>iconv implementations which do not properly set errno in case of errors are no longer supported.</li>
+</ul>
+<h3 id="IMAP"><a class="header-anchor" href="#IMAP">¶</a>IMAP</h3>
+<ul>
+<li>
+<p>The unused <code>default_host</code> argument of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imap-headerinfo.php">imap_headerinfo()</a> has been removed.</p>
+</li>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imap-header.php">imap_header()</a> function which is an alias of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imap-headerinfo.php">imap_headerinfo()</a> has been removed.</p>
+</li>
+</ul>
+<h3 id="Internationalization-Functions"><a class="header-anchor" href="#Internationalization-Functions">¶</a>Internationalization Functions</h3>
+<ul>
+<li>
+<p>The deprecated constant <code>INTL_IDNA_VARIANT_2003</code> has been removed.</p>
+</li>
+<li>
+<p>The deprecated <code>Normalizer::NONE</code> constant has been removed.</p>
+</li>
+</ul>
+<h3 id="LDAP"><a class="header-anchor" href="#LDAP">¶</a>LDAP</h3>
+<ul>
+<li>
+<p>The deprecated functions <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ldap-sort.php">ldap_sort()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ldap-control-paged-result.php">ldap_control_paged_result()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ldap-control-paged-result-response.php">ldap_control_paged_result_response()</a> have been removed.</p>
+</li>
+<li>
+<p>The interface of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ldap-set-rebind-proc.php">ldap_set_rebind_proc()</a> has changed; the <code>callback</code> parameter does not accept empty strings anymore; <code>null</code> should be used instead.</p>
+</li>
+</ul>
+<h3 id="MBString"><a class="header-anchor" href="#MBString">¶</a>MBString</h3>
+<ul>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/mbstring.configuration.php#ini.mbstring.func-overload">mbstring.func_overload</a> directive has been removed. The related <code>MB_OVERLOAD_MAIL</code>, <code>MB_OVERLOAD_STRING</code>, and <code>MB_OVERLOAD_REGEX</code> constants have also been removed. Finally, the <code>"func_overload"</code> and <code>"func_overload_list"</code> entries in <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-get-info.php">mb_get_info()</a> have been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-parse-str.php">mb_parse_str()</a> can no longer be used without specifying a result array.</p>
+</li>
+<li>
+<p>A number of deprecated mbregex aliases have been removed. See the following list for which functions should be used instead:</p>
+<ul>
+<li><strong>mbregex_encoding()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-regex-encoding.php">mb_regex_encoding()</a></li>
+<li><strong>mbereg()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg.php">mb_ereg()</a></li>
+<li><strong>mberegi()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-eregi.php">mb_eregi()</a></li>
+<li><strong>mbereg_replace()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-replace.php">mb_ereg_replace()</a></li>
+<li><strong>mberegi_replace()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-eregi-replace.php">mb_eregi_replace()</a></li>
+<li><strong>mbsplit()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-split.php">mb_split()</a></li>
+<li><strong>mbereg_match()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-match.php">mb_ereg_match()</a></li>
+<li><strong>mbereg_search()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search.php">mb_ereg_search()</a></li>
+<li><strong>mbereg_search_pos()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-pos.php">mb_ereg_search_pos()</a></li>
+<li><strong>mbereg_search_regs()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-regs.php">mb_ereg_search_regs()</a></li>
+<li><strong>mbereg_search_init()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-init.php">mb_ereg_search_init()</a></li>
+<li><strong>mbereg_search_getregs()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-getregs.php">mb_ereg_search_getregs()</a></li>
+<li><strong>mbereg_search_getpos()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-getpos.php">mb_ereg_search_getpos()</a></li>
+<li><strong>mbereg_search_setpos()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-search-setpos.php">mb_ereg_search_setpos()</a></li>
+</ul>
+</li>
+<li>
+<p>The <code>e</code> modifier for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-replace.php">mb_ereg_replace()</a> has been removed. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-replace-callback.php">mb_ereg_replace_callback()</a> should be used instead.</p>
+</li>
+<li>
+<p>A non-string pattern argument to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg-replace.php">mb_ereg_replace()</a> will now be interpreted as a string instead of an ASCII codepoint. The previous behavior may be restored with an explicit call to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.chr.php">chr()</a>.</p>
+</li>
+<li>
+<p>The <code>needle</code> argument for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strpos.php">mb_strpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strrpos.php">mb_strrpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-stripos.php">mb_stripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strripos.php">mb_strripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strstr.php">mb_strstr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-stristr.php">mb_stristr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strrchr.php">mb_strrchr()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strrichr.php">mb_strrichr()</a> can now be empty.</p>
+</li>
+<li>
+<p>The <code>is_hex</code> parameter, which was not used internally, has been removed from <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-decode-numericentity.php">mb_decode_numericentity()</a>.</p>
+</li>
+<li>
+<p>The legacy behavior of passing the encoding as the third argument instead of an offset for the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-strrpos.php">mb_strrpos()</a> function has been removed; an explicit <code>0</code> offset with the encoding should be provided as the fourth argument instead.</p>
+</li>
+<li>
+<p>The <code>ISO_8859-*</code> character encoding aliases have been replaced by <code>ISO8859-*</code> aliases for better interoperability with the iconv extension. The mbregex ISO 8859 aliases with underscores (<code>ISO_8859_*</code> and <code>ISO8859_*</code>) have also been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-ereg.php">mb_ereg()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-eregi.php">mb_eregi()</a> will now return boolean <code>true</code> on a successful match. Previously they returned integer <code>1</code> if <code>matches</code> was not passed, or <code>max(1, strlen($matches[0]))</code> if <code>matches</code> was passed.</p>
+</li>
+</ul>
+<h3 id="OCI8"><a class="header-anchor" href="#OCI8">¶</a>OCI8</h3>
+<ul>
+<li>
+<p>The <strong>OCI-Lob</strong> class is now called <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.OCI-Lob.php">OCILob</a>, and the <strong>OCI-Collection</strong> class is now called <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.OCI-Collection.php">OCICollection</a> for name compliance enforced by PHP 8 arginfo type annotation tooling.</p>
+</li>
+<li>
+<p>Several alias functions have been marked as deprecated.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.oci-internal-debug.php">oci_internal_debug()</a> and its alias <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ociinternaldebug.php">ociinternaldebug()</a> have been removed.</p>
+</li>
+</ul>
+<h3 id="ODBC"><a class="header-anchor" href="#ODBC">¶</a>ODBC</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.odbc-connect.php">odbc_connect()</a> no longer reuses connections.</p>
+</li>
+<li>
+<p>The unused <code>flags</code> parameter of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.odbc-exec.php">odbc_exec()</a> has been removed.</p>
+</li>
+</ul>
+<h3 id="OpenSSL"><a class="header-anchor" href="#OpenSSL">¶</a>OpenSSL</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-seal.php">openssl_seal()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-open.php">openssl_open()</a> now require <code>method</code> to be passed, as the previous default of <code>"RC4"</code> is considered insecure.</li>
+</ul>
+<h3 id="Regular-Expressions-Perl-Compatible"><a class="header-anchor" href="#Regular-Expressions-Perl-Compatible">¶</a>Regular Expressions (Perl-Compatible)</h3>
+<ul>
+<li>When passing invalid escape sequences they are no longer interpreted as literals. This behavior previously required the X modifier – which is now ignored.</li>
+</ul>
+<h3 id="PHP-Data-Objects-PDO"><a class="header-anchor" href="#PHP-Data-Objects-PDO">¶</a>PHP Data Objects (PDO)</h3>
+<ul>
+<li>
+<p>The default error handling mode has been changed from “silent” to “exceptions”. See <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/pdo.error-handling.php">Errors and error handling</a> for details.</p>
+</li>
+<li>
+<p>The signatures of some PDO methods have changed:</p>
+<ul>
+<li><code>PDO::query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs)</code></li>
+<li><code>PDOStatement::setFetchMode(int $mode, mixed ...$args)</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="PDO-ODBC"><a class="header-anchor" href="#PDO-ODBC">¶</a>PDO ODBC</h3>
+<ul>
+<li>The php.ini directive <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ref.pdo-odbc.php#ini.pdo-odbc.db2-instance-name">pdo_odbc.db2_instance_name</a> has been removed.</li>
+</ul>
+<h3 id="PDO-MySQL"><a class="header-anchor" href="#PDO-MySQL">¶</a>PDO MySQL</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/pdo.intransaction.php">PDO::inTransaction()</a> now reports the actual transaction state of the connection, rather than an approximation maintained by PDO. If a query that is subject to “implicit commit” is executed, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/pdo.intransaction.php">PDO::inTransaction()</a> will subsequently return <code>false</code>, as a transaction is no longer active.</li>
+</ul>
+<h3 id="PostgreSQL-PGSQL-PDO-PGSQL"><a class="header-anchor" href="#PostgreSQL-PGSQL-PDO-PGSQL">¶</a>PostgreSQL (PGSQL) / PDO PGSQL</h3>
+<ul>
+<li>
+<p>PGSQL 与 PDO PGSQL 扩展需要 libpq 的版本号至少为 9.1。</p>
+</li>
+<li>
+<p>The deprecated <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-connect.php">pg_connect()</a> syntax using multiple parameters instead of a connection string is no longer supported.</p>
+</li>
+<li>
+<p>The deprecated <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-import.php">pg_lo_import()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-export.php">pg_lo_export()</a> signature that passes the connection as the last argument is no longer supported. The connection should be passed as first argument instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-fetch-all.php">pg_fetch_all()</a> will now return an empty array instead of <code>false</code> for result sets with zero rows.</p>
+</li>
+<li>
+<p>The constant <code>PGSQL_LIBPQ_VERSION_STR</code> now has the same value as <code>PGSQL_LIBPQ_VERSION</code>, and thus is deprecated.</p>
+</li>
+<li>
+<p>Function aliases in the pgsql extension have been deprecated. See the following list for which functions should be used instead:</p>
+<ul>
+<li><strong>pg_errormessage()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-last-error.php">pg_last_error()</a></li>
+<li><strong>pg_numrows()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-num-rows.php">pg_num_rows()</a></li>
+<li><strong>pg_numfields()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-num-fields.php">pg_num_fields()</a></li>
+<li><strong>pg_cmdtuples()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-affected-rows.php">pg_affected_rows()</a></li>
+<li><strong>pg_fieldname()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-name.php">pg_field_name()</a></li>
+<li><strong>pg_fieldsize()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-size.php">pg_field_size()</a></li>
+<li><strong>pg_fieldtype()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-type.php">pg_field_type()</a></li>
+<li><strong>pg_fieldnum()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-num.php">pg_field_num()</a></li>
+<li><strong>pg_result()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-fetch-result.php">pg_fetch_result()</a></li>
+<li><strong>pg_fieldprtlen()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-prtlen.php">pg_field_prtlen()</a></li>
+<li><strong>pg_fieldisnull()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-field-is-null.php">pg_field_is_null()</a></li>
+<li><strong>pg_freeresult()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-free-result.php">pg_free_result()</a></li>
+<li><strong>pg_getlastoid()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-last-oid.php">pg_last_oid()</a></li>
+<li><strong>pg_locreate()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-create.php">pg_lo_create()</a></li>
+<li><strong>pg_lounlink()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-unlink.php">pg_lo_unlink()</a></li>
+<li><strong>pg_loopen()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-open.php">pg_lo_open()</a></li>
+<li><strong>pg_loclose()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-close.php">pg_lo_close()</a></li>
+<li><strong>pg_loread()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-read.php">pg_lo_read()</a></li>
+<li><strong>pg_lowrite()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-write.php">pg_lo_write()</a></li>
+<li><strong>pg_loreadall()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-read-all.php">pg_lo_read_all()</a></li>
+<li><strong>pg_loimport()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-import.php">pg_lo_import()</a></li>
+<li><strong>pg_loexport()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-lo-export.php">pg_lo_export()</a></li>
+<li><strong>pg_setclientencoding()</strong> → <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-set-client-encoding.php">pg_set_client_encoding()</a></li>
+<li><strong>pg_clientencoding()</strong> -&gt; <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.pg-client-encoding.php">pg_client_encoding()</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="Phar"><a class="header-anchor" href="#Phar">¶</a>Phar</h3>
+<ul>
+<li>Metadata associated with a phar will no longer be automatically unserialized, to fix potential security vulnerabilities due to object instantiation, autoloading, etc.</li>
+</ul>
+<h3 id="Reflection"><a class="header-anchor" href="#Reflection">¶</a>Reflection</h3>
+<ul>
+<li>
+<p>The method signatures</p>
+<ul>
+<li><code>ReflectionClass::newInstance($args)</code></li>
+<li><code>ReflectionFunction::invoke($args)</code></li>
+<li><code>ReflectionMethod::invoke($object, $args)</code></li>
+</ul>
+<p>have been changed to:</p>
+<ul>
+<li><code>ReflectionClass::newInstance(...$args)</code></li>
+<li><code>ReflectionFunction::invoke(...$args)</code></li>
+<li><code>ReflectionMethod::invoke($object, ...$args)</code></li>
+</ul>
+<p>Code that must be compatible with both PHP 7 and PHP 8 can use the following signatures to be compatible with both versions:</p>
+<ul>
+<li><code>ReflectionClass::newInstance($arg = null, ...$args)</code></li>
+<li><code>ReflectionFunction::invoke($arg = null, ...$args)</code></li>
+<li><code>ReflectionMethod::invoke($object, $arg = null, ...$args)</code></li>
+</ul>
+</li>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectiontype.tostring.php">ReflectionType::__toString()</a> method will now return a complete debug representation of the type, and is no longer deprecated. In particular the result will include a nullability indicator for nullable types. The format of the return value is not stable and may change between PHP versions.</p>
+</li>
+<li>
+<p>Reflection export() methods have been removed. Instead reflection objects can be cast to string.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionmethod.isconstructor.php">ReflectionMethod::isConstructor()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionmethod.isdestructor.php">ReflectionMethod::isDestructor()</a> now also return <code>true</code> for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.decon.php#object.construct">__construct()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.decon.php#object.destruct">__destruct()</a> methods of interfaces. Previously, this would only be true for methods of classes and traits.</p>
+</li>
+<li>
+<p><strong>ReflectionType::isBuiltin()</strong> method has been moved to <strong>ReflectionNamedType</strong>. <strong>ReflectionUnionType</strong> does not have it.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionfunction.isdisabled.php">ReflectionFunction::isDisabled()</a> is deprecated, as it is no longer possible to create a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.reflectionfunction.php">ReflectionFunction</a> for a disabled function. This method now always returns <code>false</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.getclass.php">ReflectionParameter::getClass()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.isarray.php">ReflectionParameter::isArray()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.iscallable.php">ReflectionParameter::isCallable()</a> are deprecated. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.gettype.php">ReflectionParameter::getType()</a> and the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.reflectiontype.php">ReflectionType</a> APIs should be used instead.</p>
+</li>
+</ul>
+<h3 id="Sockets"><a class="header-anchor" href="#Sockets">¶</a>Sockets</h3>
+<ul>
+<li>The deprecated <code>AI_IDN_ALLOW_UNASSIGNED</code> and <code>AI_IDN_USE_STD3_ASCII_RULES</code> <code>flags</code> for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.socket-addrinfo-lookup.php">socket_addrinfo_lookup()</a> have been removed.</li>
+</ul>
+<h3 id="Standard-PHP-Library-SPL"><a class="header-anchor" href="#Standard-PHP-Library-SPL">¶</a>Standard PHP Library (SPL)</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfileobject.fgetss.php">SplFileObject::fgetss()</a> has been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfileobject.seek.php">SplFileObject::seek()</a> now always seeks to the beginning of the line. Previously, positions <code>=1</code> sought to the beginning of the next line.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splheap.compare.php">SplHeap::compare()</a> now specifies a method signature. Inheriting classes implementing this method will now have to use a compatible method signature.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/spldoublylinkedlist.push.php">SplDoublyLinkedList::push()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/spldoublylinkedlist.unshift.php">SplDoublyLinkedList::unshift()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splqueue.enqueue.php">SplQueue::enqueue()</a> now return void instead of <code>true</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.spl-autoload-register.php">spl_autoload_register()</a> will now always throw a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.typeerror.php">TypeError</a> on invalid arguments, therefore the second argument <code>do_throw</code> is ignored and a notice will be emitted if it is set to <code>false</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.splfixedarray.php">SplFixedArray</a> is now an <strong>IteratorAggregate</strong> and not an <strong>Iterator</strong>. <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfixedarray.rewind.php">SplFixedArray::rewind()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfixedarray.current.php">SplFixedArray::current()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfixedarray.key.php">SplFixedArray::key()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfixedarray.next.php">SplFixedArray::next()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/splfixedarray.valid.php">SplFixedArray::valid()</a> have been removed. In their place, <strong>SplFixedArray::getIterator()</strong> has been added. Any code which uses explicit iteration over SplFixedArray must now obtain an <strong>Iterator</strong> through <strong>SplFixedArray::getIterator()</strong>. This means that <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.splfixedarray.php">SplFixedArray</a> is now safe to use in nested loops.</p>
+</li>
+</ul>
+<h3 id="Standard-Library"><a class="header-anchor" href="#Standard-Library">¶</a>Standard Library</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.assert.php">assert()</a> will no longer evaluate string arguments, instead they will be treated like any other argument. <code>assert($a == $b)</code> should be used instead of <code>assert('$a == $b')</code>. The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/info.configuration.php#ini.assert.quiet-eval">assert.quiet_eval</a> ini directive and the <code>ASSERT_QUIET_EVAL</code> constant have also been removed, as they would no longer have any effect.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.parse-str.php">parse_str()</a> can no longer be used without specifying a result array.</p>
+</li>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/filters.string.strip_tags.php">string.strip_tags</a> filter has been removed.</p>
+</li>
+<li>
+<p>The <code>needle</code> argument of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strpos.php">strpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strrpos.php">strrpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stripos.php">stripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strripos.php">strripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strstr.php">strstr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strchr.php">strchr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strrchr.php">strrchr()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stristr.php">stristr()</a> will now always be interpreted as a string. Previously non-string needles were interpreted as an ASCII code point. An explicit call to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.chr.php">chr()</a> can be used to restore the previous behavior.</p>
+</li>
+<li>
+<p>The <code>needle</code> argument for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strpos.php">strpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strrpos.php">strrpos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stripos.php">stripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strripos.php">strripos()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strstr.php">strstr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stristr.php">stristr()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strrchr.php">strrchr()</a> can now be empty.</p>
+</li>
+<li>
+<p>The <code>length</code> argument for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.substr.php">substr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.substr-count.php">substr_count()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.substr-compare.php">substr_compare()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.iconv-substr.php">iconv_substr()</a> can now be <code>null</code>. <code>null</code> values will behave as if no length argument was provided and will therefore return the remainder of the string instead of an empty string.</p>
+</li>
+<li>
+<p>The <code>length</code> argument for <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-splice.php">array_splice()</a> can now be <code>null</code>. <code>null</code>** values will behave identically to omitting the argument, thus removing everything from the <code>offset</code> to the end of the array.</p>
+</li>
+<li>
+<p>The <code>args</code> argument of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.vsprintf.php">vsprintf()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.vfprintf.php">vfprintf()</a>, and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.vprintf.php">vprintf()</a> must now be an array. Previously any type was accepted.</p>
+</li>
+<li>
+<p>The <code>'salt'</code> option of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.password-hash.php">password_hash()</a> is no longer supported. If the <code>'salt'</code> option is used a warning is generated, the provided salt is ignored, and a generated salt is used instead.</p>
+</li>
+<li>
+<p>The <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.quotemeta.php">quotemeta()</a> function will now return an empty string if an empty string was passed. Previously <code>false</code> was returned.</p>
+</li>
+<li>
+<p>The following functions have been removed:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.hebrevc.php">hebrevc()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.convert-cyr-string.php">convert_cyr_string()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.money-format.php">money_format()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ezmlm-hash.php">ezmlm_hash()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.restore-include-path.php">restore_include_path()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-magic-quotes-gpc.php">get_magic_quotes_gpc()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-magic-quotes-runtime.php">get_magic_quotes_runtime()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.fgetss.php">fgetss()</a></li>
+</ul>
+</li>
+<li>
+<p><code>FILTER_SANITIZE_MAGIC_QUOTES</code> has been removed.</p>
+</li>
+<li>
+<p>Calling <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.implode.php">implode()</a> with parameters in a reverse order <code>($pieces, $glue)</code> is no longer supported.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.parse-url.php">parse_url()</a> will now distinguish absent and empty queries and fragments:</p>
+<ul>
+<li><code>http://example.com/foo → query = null, fragment = null</code></li>
+<li><code>http://example.com/foo? → query = "", fragment = null</code></li>
+<li><code>http://example.com/foo# → query = null, fragment = ""</code></li>
+<li><code>http://example.com/foo?# → query = "", fragment = ""</code></li>
+</ul>
+<p>Previously all cases resulted in query and fragment being <code>null</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.var-dump.php">var_dump()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.debug-zval-dump.php">debug_zval_dump()</a> will now print floating-point numbers using <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ini.core.php#ini.serialize-precision">serialize_precision</a> rather than <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ini.core.php#ini.precision">precision</a>. In a default configuration, this means that floating-point numbers are now printed with full accuracy by these debugging functions.</p>
+</li>
+<li>
+<p>If the array returned by <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.magic.php#object.sleep">__sleep()</a> contains non-existing properties, these are now silently ignored. Previously, such properties would have been serialized as if they had the value <code>null</code>.</p>
+</li>
+<li>
+<p>The default locale on startup is now always <code>"C"</code>. No locales are inherited from the environment by default. Previously, <code>LC_ALL</code> was set to <code>"C"</code>, while <code>LC_CTYPE</code> was inherited from the environment. However, some functions did not respect the inherited locale without an explicit <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.setlocale.php">setlocale()</a> call. An explicit <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.setlocale.php">setlocale()</a> call is now always required if a locale component should be changed from the default.</p>
+</li>
+<li>
+<p>The deprecated DES fallback in <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.crypt.php">crypt()</a> has been removed. If an unknown salt format is passed to <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.crypt.php">crypt()</a>, the function will fail with <code>*0</code> instead of falling back to a weak DES hash now.</p>
+</li>
+<li>
+<p>Specifying out of range rounds for SHA256/SHA512 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.crypt.php">crypt()</a> will now fail with <code>*0</code> instead of clamping to the closest limit. This matches glibc behavior.</p>
+</li>
+<li>
+<p>The result of sorting functions may have changed, if the array contains elements that compare as equal.</p>
+</li>
+<li>
+<p>Any functions accepting callbacks that are not explicitly specified to accept parameters by reference will now warn if a callback with reference parameters is used. Examples include <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-filter.php">array_filter()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-reduce.php">array_reduce()</a>. This was already the case for most, but not all, functions previously.</p>
+</li>
+<li>
+<p>The HTTP stream wrapper as used by functions like <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.file-get-contents.php">file_get_contents()</a> now advertises HTTP/1.1 rather than HTTP/1.0 by default. This does not change the behavior of the client, but may cause servers to respond differently. To retain the old behavior, set the <code>'protocol_version'</code> stream context option, e.g.</p>
+<pre><code class="language-php">&lt;?php
+$ctx&nbsp;=&nbsp;stream_context_create(['http'&nbsp;=&gt;&nbsp;['protocol_version'&nbsp;=&gt;&nbsp;'1.0']]);
+echo&nbsp;file_get_contents('http://example.org',&nbsp;false,&nbsp;$ctx);
+?&gt;
+</code></pre>
+</li>
+<li>
+<p>Calling <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.crypt.php">crypt()</a> without an explicit salt is no longer supported. If you would like to produce a strong hash with an auto-generated salt, use <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.password-hash.php">password_hash()</a> instead.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.substr.php">substr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mb-substr.php">mb_substr()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.iconv-substr.php">iconv_substr()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.grapheme-substr.php">grapheme_substr()</a> now consistently clamp out-of-bounds offsets to the string boundary. Previously, <code>false</code> was returned instead of the empty string in some cases.</p>
+</li>
+<li>
+<p>On Windows, the program execution functions (<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.proc-open.php">proc_open()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.exec.php">exec()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.popen.php">popen()</a> etc.) using the shell, now consistently execute <strong>%comspec% /s /c “$commandline”</strong>, which has the same effect as executing <strong>$commandline</strong> (without additional quotes).</p>
+</li>
+<li>
+<p>Sort comparison functions that return <code>true</code> or <code>false</code> will now throw a deprecation warning, and should be replaced with an implementation that returns an integer less than, equal to, or greater than zero.</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;Replace
+usort($array,&nbsp;fn($a,&nbsp;$b)&nbsp;=&gt;&nbsp;$a&nbsp;&gt;&nbsp;$b);
+//&nbsp;With
+usort($array,&nbsp;fn($a,&nbsp;$b)&nbsp;=&gt;&nbsp;$a&nbsp;&lt;=&gt;&nbsp;$b);
+?&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="Sysvsem"><a class="header-anchor" href="#Sysvsem">¶</a>Sysvsem</h3>
+<ul>
+<li>The <code>auto_release</code> parameter of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.sem-get.php">sem_get()</a> was changed to accept bool values rather than int.</li>
+</ul>
+<h3 id="Tidy"><a class="header-anchor" href="#Tidy">¶</a>Tidy</h3>
+<ul>
+<li>
+<p>The <code>use_include_path</code> parameter, which was not used internally, has been removed from <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/tidy.repairstring.php">tidy_repair_string()</a>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/tidy.repairstring.php">tidy::repairString()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/tidy.repairfile.php">tidy::repairFile()</a> became static methods.</p>
+</li>
+</ul>
+<h3 id="Tokenizer"><a class="header-anchor" href="#Tokenizer">¶</a>Tokenizer</h3>
+<ul>
+<li>
+<p><code>T_COMMENT</code> tokens will no longer include a trailing newline. The newline will instead be part of a following <code>T_WHITESPACE</code> token. It should be noted that <code>T_COMMENT</code> is not always followed by whitespace, it may also be followed by <code>T_CLOSE_TAG</code> or end-of-file.</p>
+</li>
+<li>
+<p>Namespaced names are now represented using the <code>T_NAME_QUALIFIED</code> (<code>Foo\Bar</code>), <code>T_NAME_FULLY_QUALIFIED</code> (<code>\Foo\Bar</code>) and <code>T_NAME_RELATIVE</code> (<code>namespace\Foo\Bar</code>) tokens. <code>T_NS_SEPARATOR</code> is only used for standalone namespace separators, and only syntactially valid in conjunction with group use declarations.</p>
+</li>
+</ul>
+<h3 id="XMLReader"><a class="header-anchor" href="#XMLReader">¶</a>XMLReader</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/xmlreader.open.php">XMLReader::open()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/xmlreader.xml.php">XMLReader::xml()</a> are now static methods. They can still be called as instance methods, but inheriting classes need to declare them as static if they override these methods.</li>
+</ul>
+<h3 id="XML-RPC"><a class="header-anchor" href="#XML-RPC">¶</a>XML-RPC</h3>
+<ul>
+<li>The XML-RPC extension has been moved to PECL and is no longer part of the PHP distribution.</li>
+</ul>
+<h3 id="Zip"><a class="header-anchor" href="#Zip">¶</a>Zip</h3>
+<ul>
+<li>
+<p><code>ZipArchive::OPSYS_Z_CPM</code> has been removed (this name was a typo). Use <code>ZipArchive::OPSYS_CPM</code> instead.</p>
+</li>
+<li>
+<p>Using an empty file as ZipArchive is deprecated. Libzip 1.6.0 does not accept empty files as valid zip archives any longer. The existing workaround will be removed in the next version.</p>
+</li>
+<li>
+<p>The procedural API of Zip is deprecated. Use <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.ziparchive.php">ZipArchive</a> instead. Iteration over all entries can be accomplished using <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.statindex.php">ZipArchive::statIndex()</a> and a <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/control-structures.for.php">for</a> loop:</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;iterate&nbsp;using&nbsp;the&nbsp;procedural&nbsp;API
+assert(is_resource($zip));
+while&nbsp;($entry&nbsp;=&nbsp;zip_read($zip))&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;zip_entry_name($entry);
+}
+
+//&nbsp;iterate&nbsp;using&nbsp;the&nbsp;object-oriented&nbsp;API
+assert($zip&nbsp;instanceof&nbsp;ZipArchive);
+for&nbsp;($i&nbsp;=&nbsp;0;&nbsp;$entry&nbsp;=&nbsp;$zip-&gt;statIndex($i);&nbsp;$i++)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;$entry['name'];
+}
+?&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="Zlib"><a class="header-anchor" href="#Zlib">¶</a>Zlib</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gzgetss.php">gzgetss()</a> has been removed.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/zlib.configuration.php#ini.zlib.output-compression">zlib.output_compression</a> is no longer automatically disabled for <code>Content-Type: image/*</code>.</p>
+</li>
+</ul>
+<h3 id="Windows-PHP-Test-Packs"><a class="header-anchor" href="#Windows-PHP-Test-Packs">¶</a>Windows PHP Test Packs</h3>
+<ul>
+<li>The test runner has been renamed from run-test.php to run-tests.php, to match its name in php-src.</li>
+</ul>
+<h3 id="LibXML"><a class="header-anchor" href="#LibXML">¶</a>LibXML</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.libxml-disable-entity-loader.php">libxml_disable_entity_loader()</a> has been deprecated. As libxml 2.9.0 is now required, external entity loading is guaranteed to be disabled by default, and this function is no longer needed to protect against XXE attacks, unless the (still vulnerable). <code>LIBXML_NOENT</code> is used. In that case, it is recommended to refactor the code using <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.libxml-set-external-entity-loader.php">libxml_set_external_entity_loader()</a> to suppress loading of external entities.</li>
+</ul>
+<h3 id="EBCDIC"><a class="header-anchor" href="#EBCDIC">¶</a>EBCDIC</h3>
+<p>不再支持 EBCDIC targets，虽然它不太可能还在当初的地方继续运行。</p>
+<h3 id="SAPI"><a class="header-anchor" href="#SAPI">¶</a>SAPI</h3>
+<ul>
+<li>Apache 2 Handler
+<ul>
+<li><a target="_blank" rel="noopener" href="https://php.watch/versions/8.0/mod_php-rename">PHP 模块从 php7_module 重命名为 php_module。</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="新特性"><a class="header-anchor" href="#新特性">¶</a>新特性</h2>
+<h3 id="PHP-Core-v2"><a class="header-anchor" href="#PHP-Core-v2">¶</a>PHP Core</h3>
+<ul>
+<li>
+<p>新增<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/functions.arguments.php#functions.named-arguments">命名参数</a>的功能。</p>
+</li>
+<li>
+<p>新增<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.attributes.php">注解</a>的功能。</p>
+</li>
+<li>
+<p>新增<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.decon.php#language.oop5.decon.constructor.promotion">构造器属性提升</a>功能 在构造函数中声明类的属性）。</p>
+</li>
+<li>
+<p>新增 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.declarations.php#language.types.declarations.union">联合类型</a>。</p>
+</li>
+<li>
+<p>新增 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/control-structures.match.php"><code>match</code> 表达式</a>。</p>
+</li>
+<li>
+<p>新增<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.basic.php#language.oop5.basic.nullsafe">Nullsafe 运算符</a>(<code>?-&gt;</code>)。</p>
+</li>
+<li>
+<p>新增 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.weakmap.php">WeakMap</a> 类。</p>
+</li>
+<li>
+<p>新增 <strong>ValueError</strong> 类。</p>
+</li>
+<li>
+<p>现在，只要类型兼容，任意数量的函数参数都可以用一个可变参数替换。 例如允许编写下面的代码：</p>
+<pre><code class="language-php">&lt;?php
+class&nbsp;A&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;method(int&nbsp;$many,&nbsp;string&nbsp;$parameters,&nbsp;$here)&nbsp;{}
+}
+class&nbsp;B&nbsp;extends&nbsp;A&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;method(...$everything)&nbsp;{}
+}
+?&gt;
+</code></pre>
+</li>
+<li>
+<p>static ("后期静态绑定"中) 可以作为返回类型：</p>
+<pre><code class="language-php">&lt;?php
+class&nbsp;Test&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;create():&nbsp;static&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;static();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+}
+?&gt;
+</code></pre>
+</li>
+<li>
+<p>现在可以通过 <code>$object::class</code> 获取类名，返回的结果和 <code>get_class($object)</code> 一致。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.basic.php#language.oop5.basic.new"><code>new</code></a>、<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.operators.type.php"><code>instanceof</code></a> 可用于任何表达式， 用法为 <code>new (expression)(...$args)</code> 和 <code>$obj instanceof (expression)</code>。</p>
+</li>
+<li>
+<p>添加对一些变量语法一致性的修复，例如现在能够编写 <code>Foo::BAR::$baz</code>。</p>
+</li>
+<li>
+<p>添加 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.stringable.php">Stringable</a> interface， 当一个类定义 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.magic.php#object.tostring">__toString()</a> 方法后会自动实现该接口。</p>
+</li>
+<li>
+<p>Trait 可以定义私有抽象方法（abstract private method）。 类必须实现 trait 定义的该方法。</p>
+</li>
+<li>
+<p>可作为表达式使用 <code>throw</code>。 使得可以编写以下用法：</p>
+<pre><code class="language-php">&lt;?php
+$fn&nbsp;=&nbsp;fn()&nbsp;=&gt;&nbsp;throw&nbsp;new&nbsp;Exception('Exception&nbsp;in&nbsp;arrow&nbsp;function');
+$user&nbsp;=&nbsp;$session-&gt;user&nbsp;??&nbsp;throw&nbsp;new&nbsp;Exception('Must&nbsp;have&nbsp;user');
+</code></pre>
+</li>
+<li>
+<p>参数列表中的末尾逗号为可选。</p>
+<pre><code class="language-php">&lt;?php
+function&nbsp;functionWithLongSignature(
+&nbsp;&nbsp;&nbsp;&nbsp;Type1&nbsp;$parameter1,
+&nbsp;&nbsp;&nbsp;&nbsp;Type2&nbsp;$parameter2,&nbsp;//&nbsp;&lt;--&nbsp;这个逗号也被允许了
+)&nbsp;{
+}
+</code></pre>
+</li>
+<li>
+<p>现在允许 <code>catch (Exception)</code> 一个 exception 而无需捕获到变量中。</p>
+</li>
+<li>
+<p>支持 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.declarations.php#language.types.declarations.mixed">mixed</a> 类型。</p>
+</li>
+<li>
+<p>Private methods declared on a parent class no longer enforce any inheritance rules on the methods of a child class (with the exception of final private constructors). The following example illustrates which restrictions have been removed:</p>
+<pre><code class="language-php">&lt;?php
+class&nbsp;ParentClass&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;function&nbsp;method1()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;function&nbsp;method2()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;function&nbsp;method3()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Throws&nbsp;a&nbsp;warning,&nbsp;as&nbsp;"final"&nbsp;no&nbsp;longer&nbsp;has&nbsp;an&nbsp;effect:
+&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;final&nbsp;function&nbsp;method4()&nbsp;{}
+}
+class&nbsp;ChildClass&nbsp;extends&nbsp;ParentClass&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;All&nbsp;of&nbsp;the&nbsp;following&nbsp;are&nbsp;now&nbsp;allowed,&nbsp;even&nbsp;though&nbsp;the&nbsp;modifiers&nbsp;aren't
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;the&nbsp;same&nbsp;as&nbsp;for&nbsp;the&nbsp;private&nbsp;methods&nbsp;in&nbsp;the&nbsp;parent&nbsp;class.
+&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;abstract&nbsp;function&nbsp;method1()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;method2()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;method3()&nbsp;{}
+&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;method4()&nbsp;{}
+}
+?&gt;
+</code></pre>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-resource-id.php">get_resource_id()</a> has been added, which returns the same value as <code>(int) $resource</code>. It provides the same functionality under a clearer API.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-slice.php">array_slice()</a> 用于没有空隙的数组时， 将不会扫描整个数组去查找开始的位移（offset）。 在 offset 较大、长度较小时，会显著减少函数的运行时间。</p>
+</li>
+<li>
+<p><sup>[&lt;!–swig￼0–&gt;]</sup> 当本地化 <code>LC_CTYPE</code> 为 <code>"C"</code> 时（也是默认值）， <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.strtolower.php">strtolower()</a> 会使用 SIMD 的实现。</p>
+<ul>
+<li>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2020/06/16/5916.html">是怎样使用SSE2 (Streaming SIMD Extensions 2) 的实现来提升strtolower性能的呢？</a></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Date-and-Time-v2"><a class="header-anchor" href="#Date-and-Time-v2">¶</a>Date and Time</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/datetime.createfrominterface.php">DateTime::createFromInterface()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/datetimeimmutable.createfrominterface.php">DateTimeImmutable::createFromInterface()</a> have been added.</p>
+</li>
+<li>
+<p>The DateTime format specifier <code>p</code> has been added, which is the same as <code>P</code> but returns <code>Z</code> rather than <code>+00:00</code> for UTC.</p>
+</li>
+</ul>
+<h3 id="DOM-v2"><a class="header-anchor" href="#DOM-v2">¶</a>DOM</h3>
+<p><strong>DOMParentNode</strong> and <strong>DOMChildNode</strong> with new traversal and manipulation APIs have been added.</p>
+<h3 id="Filter-v2"><a class="header-anchor" href="#Filter-v2">¶</a>Filter</h3>
+<p><code>FILTER_VALIDATE_BOOL</code> has been added as an alias for <code>FILTER_VALIDATE_BOOLEAN</code>. The new name is preferred, as it uses the canonical type name.</p>
+<h3 id="Enchant-v2"><a class="header-anchor" href="#Enchant-v2">¶</a>Enchant</h3>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-add.php">enchant_dict_add()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.enchant-dict-is-added.php">enchant_dict_is_added()</a>, and <code>LIBENCHANT_VERSION</code> have been added.</p>
+<h3 id="FPM"><a class="header-anchor" href="#FPM">¶</a>FPM</h3>
+<p>Added a new option pm.status_listen that allows getting the status from different endpoint (e.g. port or UDS file) which is useful for getting the status when all children are busy with serving long running requests.</p>
+<h3 id="Hash"><a class="header-anchor" href="#Hash">¶</a>Hash</h3>
+<p><strong>HashContext</strong> objects can now be serialized.</p>
+<h3 id="Internationalization-Functions-v2"><a class="header-anchor" href="#Internationalization-Functions-v2">¶</a>Internationalization Functions</h3>
+<p>The <code>IntlDateFormatter::RELATIVE_FULL</code>, <code>IntlDateFormatter::RELATIVE_LONG</code>, <code>IntlDateFormatter::RELATIVE_MEDIUM</code>, and <code>IntlDateFormatter::RELATIVE_SHORT</code> constants have been added.</p>
+<h3 id="LDAP-v2"><a class="header-anchor" href="#LDAP-v2">¶</a>LDAP</h3>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ldap-count-references.php">ldap_count_references()</a> has been added, which returns the number of reference messages in a search result.</p>
+<h3 id="OPcache"><a class="header-anchor" href="#OPcache">¶</a>OPcache</h3>
+<ul>
+<li>
+<p>opcache 扩展新增了即时编译(JIT) 支持。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2020/06/27/5963.html">PHP8的Opcache JIT要怎样用，有什么要注意，性能提升效果咋样？</a></p>
+</li>
+<li>
+<p>If the opcache.record_warnings ini setting is enabled, OPcache will record compile-time warnings and replay them on the next include, even if it is served from cache.</p>
+</li>
+</ul>
+<h3 id="OpenSSL-v2"><a class="header-anchor" href="#OpenSSL-v2">¶</a>OpenSSL</h3>
+<p>Added <a target="_blank" rel="noopener" href="https://www.vocal.com/secure-communication/cryptographic-message-syntax-cms/">Cryptographic Message Syntax (CMS)</a> (<a target="_blank" rel="noopener" href="http://www.faqs.org/rfcs/rfc5652">»&nbsp;RFC 5652</a>) support composed of functions for encryption, decryption, signing, verifying and reading. The API is similar to the API for PKCS #7 functions with an addition of new encoding constants: <code>OPENSSL_ENCODING_DER</code>, <code>OPENSSL_ENCODING_SMIME</code> and <code>OPENSSL_ENCODING_PEM</code>:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-cms-encrypt.php">openssl_cms_encrypt()</a> encrypts the message in the file with the certificates and outputs the result to the supplied file.</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-cms-decrypt.php">openssl_cms_decrypt()</a> that decrypts the S/MIME message in the file and outputs the results to the supplied file.</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-cms-read.php">openssl_cms_read()</a> that exports the CMS file to an array of PEM certificates.</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-cms-sign.php">openssl_cms_sign()</a> that signs the MIME message in the file with a cert and key and output the result to the supplied file.</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.openssl-cms-verify.php">openssl_cms_verify()</a> that verifies that the data block is intact, the signer is who they say they are, and returns the certs of the signers.</li>
+</ul>
+<h3 id="Regular-Expressions-Perl-Compatible-v2"><a class="header-anchor" href="#Regular-Expressions-Perl-Compatible-v2">¶</a>Regular Expressions (Perl-Compatible)</h3>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.preg-last-error-msg.php">preg_last_error_msg()</a> has been added, which returns a human-readable message for the last PCRE error. It complements <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.preg-last-error.php">preg_last_error()</a>, which returns an integer enum value instead.</p>
+<h3 id="Reflection-v2"><a class="header-anchor" href="#Reflection-v2">¶</a>Reflection</h3>
+<ul>
+<li>
+<p>The following methods can now return information about default values of parameters of internal functions:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.isdefaultvalueavailable.php">ReflectionParameter::isDefaultValueAvailable()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.getdefaultvalue.php">ReflectionParameter::getDefaultValue()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.isdefaultvalueconstant.php">ReflectionParameter::isDefaultValueConstant()</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionparameter.getdefaultvalueconstantname.php">ReflectionParameter::getDefaultValueConstantName()</a></li>
+</ul>
+</li>
+<li>
+<p>可通过新参数 <code>filter</code> 来过滤 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionclass.getconstants.php">ReflectionClass::getConstants()</a> 和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reflectionclass.getreflectionconstants.php">ReflectionClass::getReflectionConstants()</a> 的返回结果。 新增三个常量，搭配使用：</p>
+<ul>
+<li><code>ReflectionClassConstant::IS_PUBLIC</code></li>
+<li><code>ReflectionClassConstant::IS_PROTECTED</code></li>
+<li><code>ReflectionClassConstant::IS_PRIVATE</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="SQLite3"><a class="header-anchor" href="#SQLite3">¶</a>SQLite3</h3>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/sqlite3.setauthorizer.php">SQLite3::setAuthorizer()</a> and respective class constants have been added to set a userland callback that will be used to authorize or not an action on the database.</p>
+<h3 id="Standard-Library-v2"><a class="header-anchor" href="#Standard-Library-v2">¶</a>Standard Library</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.str-contains.php">str_contains()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.str-starts-with.php">str_starts_with()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.str-ends-with.php">str_ends_with()</a> have been added, which check whether <code>haystack</code> contains, starts with or ends with <code>needle</code>, respectively.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.fdiv.php">fdiv()</a> has been added, which performs a floating-point division under IEEE 754 semantics. Division by zero is considered well-defined and will return one of <code>Inf</code>, <code>-Inf</code> or <code>NaN</code>.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-debug-type.php">get_debug_type()</a> has been added, which returns a type useful for error messages. Unlike <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.gettype.php">gettype()</a>, it uses canonical type names, returns class names for objects, and indicates the resource type for resources.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.printf.php">printf()</a> and friends now support the <code>%h</code> and <code>%H</code> format specifiers. These are the same as <code>%g</code> and <code>%G</code>, but always use <code>"."</code> as the decimal separator, rather than determining it through the <code>LC_NUMERIC</code> locale.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.printf.php">printf()</a> and friends now support using <code>"*"</code> as width or precision, in which case the width/precision is passed as an argument to printf. This also allows using precision <code>-1</code> with <code>%g</code>, <code>%G</code>, <code>%h</code> and <code>%H</code>. For example, the following code can be used to reproduce PHP’s default floating point formatting:</p>
+<pre><code class="language-php">&lt;?php
+printf("%.*H",&nbsp;(int)&nbsp;ini_get("precision"),&nbsp;$float);
+printf("%.*H",&nbsp;(int)&nbsp;ini_get("serialize_precision"),&nbsp;$float);
+?&gt;
+</code></pre>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.proc-open.php">proc_open()</a> now supports <a target="_blank" rel="noopener" href="https://www.gnu.org/software/libc/manual/html_node/Pseudo_002dTerminals.html">pseudo-terminal (PTY)</a> descriptors. The following attaches <code>stdin</code>, <code>stdout</code> and <code>stderr</code> to the same PTY:</p>
+<pre><code class="language-php">&lt;?php
+$proc&nbsp;=&nbsp;proc_open($command,&nbsp;[['pty'],&nbsp;['pty'],&nbsp;['pty']],&nbsp;$pipes);
+?&gt;
+</code></pre>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.proc-open.php">proc_open()</a> now supports <a target="_blank" rel="noopener" href="https://www.gnu.org/software/libc/manual/html_node/Socket-Pairs.html">socket pair</a> descriptors. The following attaches a distinct socket pair to <code>stdin</code>, <code>stdout</code> and <code>stderr</code>:</p>
+<pre><code class="language-php">&lt;?php
+$proc&nbsp;=&nbsp;proc_open($command,&nbsp;[['socket'],&nbsp;['socket'],&nbsp;['socket']],&nbsp;$pipes);
+?&gt;
+</code></pre>
+<p>Unlike pipes, sockets do not suffer from blocking I/O issues on Windows. However, not all programs may work correctly with stdio sockets.</p>
+</li>
+<li>
+<p>Sorting functions are now stable, which means that equal-comparing elements will retain their original order.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-diff.php">array_diff()</a>, <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.array-intersect.php">array_intersect()</a> and their variations can now be used with a single array as argument. This means that usages like the following are now possible:</p>
+<pre><code class="language-php">&lt;?php
+//&nbsp;OK&nbsp;even&nbsp;if&nbsp;$excludes&nbsp;is&nbsp;empty:
+array_diff($array,&nbsp;...$excludes);
+//&nbsp;OK&nbsp;even&nbsp;if&nbsp;$arrays&nbsp;only&nbsp;contains&nbsp;a&nbsp;single&nbsp;array:
+array_intersect(...$arrays);
+?&gt;
+</code></pre>
+</li>
+<li>
+<p>The <code>flag</code> parameter of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.ob-implicit-flush.php">ob_implicit_flush()</a> was changed to accept a bool rather than an int.</p>
+</li>
+</ul>
+<h3 id="Tokenizer-v2"><a class="header-anchor" href="#Tokenizer-v2">¶</a>Tokenizer</h3>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.phptoken.php">PhpToken</a> adds an object-based interface to the tokenizer. It provides a more uniform and ergonomic representation, while being more memory efficient and faster.</p>
+<h3 id="Zip-v2"><a class="header-anchor" href="#Zip-v2">¶</a>Zip</h3>
+<ul>
+<li>
+<p>The Zip extension has been updated to version 1.19.1.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.setmtimename.php">ZipArchive::setMtimeName()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.setmtimeindex.php">ZipArchive::setMtimeIndex()</a> to set the modification time of an entry.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.registerprogresscallback.php">ZipArchive::registerProgressCallback()</a> to provide updates during archive close.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.registercancelcallback.php">ZipArchive::registerCancelCallback()</a> to allow cancellation during archive close.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.replacefile.php">ZipArchive::replaceFile()</a> to replace an entry content.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.iscompressionmethoddupported.php">ZipArchive::isCompressionMethodSupported()</a> to check optional compression features.</p>
+</li>
+<li>
+<p>New <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.isencryptionmethoddupported.php">ZipArchive::isEncryptionMethodSupported()</a> to check optional encryption features.</p>
+</li>
+<li>
+<p>The ZipArchive::lastId property to get the index value of the last added entry has been added.</p>
+</li>
+<li>
+<p>Errors can now be checked after an archive has been closed using the ZipArchive::status and ZipArchive::statusSys properties, or the <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.getstatusstring.php">ZipArchive::getStatusString()</a> method.</p>
+</li>
+<li>
+<p>The <code>'remove_path'</code> option of <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addglob.php">ZipArchive::addGlob()</a> and <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addpattern.php">ZipArchive::addPattern()</a> is now treated as an arbitrary string prefix (for consistency with the <code>'add_path'</code> option), whereas formerly it was treated as a directory name.</p>
+</li>
+<li>
+<p>Optional compression / encryption features are now listed in phpinfo.</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addglob.php">ZipArchive::addGlob()</a> 和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addpattern.php">ZipArchive::addPattern()</a> 方法中 <code>options</code> 数组参数可接受更多的值：</p>
+<ul>
+<li><code>flags</code></li>
+<li><code>comp_method</code></li>
+<li><code>comp_flags</code></li>
+<li><code>env_method</code></li>
+<li><code>enc_password</code></li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addemptydir.php">ZipArchive::addEmptyDir()</a>、<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addfile.php">ZipArchive::addFile()</a>、 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.addfromstring.php">ZipArchive::addFromString()</a> 方法新增 <code>flags</code> 参数。 可用于名称编码 (<code>ZipArchive::FL_ENC_*</code>) 与条目（entry）替换 (<code>ZipArchive::FL_OVERWRITE</code>)。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ziparchive.extractto.php">ZipArchive::extractTo()</a> 现在会储存文件的修改时间。</p>
+</li>
+</ul>
+<h3 id="JSON"><a class="header-anchor" href="#JSON">¶</a>JSON</h3>
+<p>现在无法禁用 JSON 扩展，将是任意 PHP 版本的内置功能，类似 date 扩展。</p>
+<h3 id="GD-v2"><a class="header-anchor" href="#GD-v2">¶</a>GD</h3>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imagepolygon.php">imagepolygon()</a>、 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imageopenpolygon.php">imageopenpolygon()</a>、<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imagefilledpolygon.php">imagefilledpolygon()</a> 的参数 <code>num_points</code> 现在为可选参数。 这些函数可用三或四个参数去调用。 省略参数时，会按 <code>count($points)/2</code> 计算。</p>
+</li>
+<li>
+<p>新增函数 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.imagegetinterpolation.php">imagegetinterpolation()</a>，可获取当前的插值（interpolation）。</p>
+</li>
+</ul>
+<h3 id="SimpleXML"><a class="header-anchor" href="#SimpleXML">¶</a>SimpleXML</h3>
+<p>现在 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.simplexmlelement.php">SimpleXMLElement</a> 实现（implements）了 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.recursiveiterator.php">RecursiveIterator</a> 并吸收了 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.simplexmliterator.php">SimpleXMLIterator</a> 的功能。 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.simplexmliterator.php">SimpleXMLIterator</a> 是 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.simplexmlelement.php">SimpleXMLElement</a> 的一个空扩展。</p>
+<h3 id="INI-文件处理的变更"><a class="header-anchor" href="#INI-文件处理的变更">¶</a>INI 文件处理的变更</h3>
+<ul>
+<li>
+<p>com.dotnet_version 是一个新的 INI 指令，用于选择 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.dotnet.php">dotnet</a> 对象的 .NET framework 版本。</p>
+</li>
+<li>
+<p>zend.exception_string_param_max_len 是一个新的 INI 指令，用于设置字符串化的调用栈（stack strace）的最大字符串长度。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/%E5%8E%86%E5%8F%B2/" rel="tag"># 历史</a>
+              <a href="/tags/PHP%E5%8F%91%E5%B1%95%E5%8F%B2/" rel="tag"># PHP发展史</a>
+              <a href="/tags/%E6%8A%80%E6%9C%AF%E5%8F%91%E5%B1%95%E5%8F%B2/" rel="tag"># 技术发展史</a>
+              <a href="/tags/PHP8/" rel="tag"># PHP8</a>
+              <a href="/tags/Cryptographic-Message-Syntax/" rel="tag"># Cryptographic Message Syntax</a>
+              <a href="/tags/Pseudo-Terminals/" rel="tag"># Pseudo Terminals</a>
+              <a href="/tags/Socket-Pairs/" rel="tag"># Socket Pairs</a>
+              <a href="/tags/PHP-Zip/" rel="tag"># PHP Zip</a>
+              <a href="/tags/PHP-Tokenizer/" rel="tag"># PHP Tokenizer</a>
+              <a href="/tags/Just-In-Time/" rel="tag"># Just-In-Time</a>
+              <a href="/tags/JIT/" rel="tag"># JIT</a>
+              <a href="/tags/Streaming-SIMD-Extensions-2/" rel="tag"># Streaming SIMD Extensions 2</a>
+              <a href="/tags/SSE2/" rel="tag"># SSE2</a>
+              <a href="/tags/LSP/" rel="tag"># LSP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/11/28/PHP-Version-7-4-0-Published/" rel="prev" title="PHP Version 7.4.0 Published">
+                  <i class="fa fa-chevron-left"></i> PHP Version 7.4.0 Published
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/26/PHP-8-0-0/" rel="next" title="PHP 8.0.0">
+                  PHP 8.0.0 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  © 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯狂的茶几</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">162k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:27</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+  
+
+
+  
+
+
+
+
+
+
+
+<script src="/bundle.js"></script><script>{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script></body></html>

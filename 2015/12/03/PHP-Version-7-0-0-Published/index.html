@@ -1,0 +1,1717 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+
+
+
+
+
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.tomhjx.top","root":"/","images":"/images","scheme":"Mist","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script>
+<meta name="description" content="¶目标及关键路径  提升性能，预期提升30%+，实际提升了100%+  降低内存占用, 提高缓存友好性, 降低执行的指令数   优化ZVAL   ZVAL这个结构体的大小是(在64位系统)24个字节，在zval.value联合体中, zend_object_value是最大的长板, 它导致整个value需要16个字节  优化结构，在64位环境下,现在只需要16个字节    PHP中大量的结构体都是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP Version 7.0.0 Published">
+<meta property="og:url" content="https://www.tomhjx.top/2015/12/03/PHP-Version-7-0-0-Published/index.html">
+<meta property="og:site_name" content="疯狂的茶几">
+<meta property="og:description" content="¶目标及关键路径  提升性能，预期提升30%+，实际提升了100%+  降低内存占用, 提高缓存友好性, 降低执行的指令数   优化ZVAL   ZVAL这个结构体的大小是(在64位系统)24个字节，在zval.value联合体中, zend_object_value是最大的长板, 它导致整个value需要16个字节  优化结构，在64位环境下,现在只需要16个字节    PHP中大量的结构体都是">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-12-03T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-15T08:34:35.738Z">
+<meta property="article:author" content="疯狂的茶几">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="PHP发展史">
+<meta property="article:tag" content="技术发展史">
+<meta property="article:tag" content="PHP7">
+<meta property="article:tag" content="LiteSpeed">
+<meta property="article:tag" content="PGO">
+<meta property="article:tag" content="HugePage">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.tomhjx.top/2015/12/03/PHP-Version-7-0-0-Published/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.tomhjx.top/2015/12/03/PHP-Version-7-0-0-Published/","path":"2015/12/03/PHP-Version-7-0-0-Published/","title":"PHP Version 7.0.0 Published"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PHP Version 7.0.0 Published | 疯狂的茶几</title>
+  
+
+
+
+<script data-ad-client="ca-pub-5611057674493702" async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <style>@-moz-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-webkit-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-o-keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@keyframes next-shake{0%{transform:translate(1pt,1pt) rotate(0)}10%{transform:translate(-1pt,-2pt) rotate(-1deg)}20%{transform:translate(-3pt,0) rotate(1deg)}30%{transform:translate(3pt,2pt) rotate(0)}40%{transform:translate(1pt,-1pt) rotate(1deg)}50%{transform:translate(-1pt,2pt) rotate(-1deg)}60%{transform:translate(-3pt,1pt) rotate(0)}70%{transform:translate(3pt,1pt) rotate(-1deg)}80%{transform:translate(-1pt,-1pt) rotate(1deg)}90%{transform:translate(1pt,2pt) rotate(0)}to{transform:translate(1pt,-2pt) rotate(-1deg)}}@-moz-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-webkit-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-o-keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@keyframes octocat-wave{0%,to{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@-moz-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-webkit-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-o-keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@keyframes icon-animate{0%,to{transform:scale(1)}10%,30%{transform:scale(.9)}20%,40%,50%,60%,70%,80%{transform:scale(1.1)}}@-moz-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-webkit-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-o-keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@keyframes next-roll{0%{transform:rotateZ(30deg)}to{transform:rotateZ(-30deg)}}@-moz-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@-webkit-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@-o-keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}@keyframes dot-flash{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}:root{--body-bg-color:#fff;--content-bg-color:#f5f5f5;--card-bg-color:#f5f5f5;--text-color:#555;--blockquote-color:#666;--link-color:#555;--link-hover-color:#222;--brand-color:#222;--brand-hover-color:#222;--table-row-odd-bg-color:#f9f9f9;--table-row-hover-bg-color:#f5f5f5;--menu-item-bg-color:#ddd;--btn-default-bg:transparent;--btn-default-color:var(--link-color);--btn-default-border-color:var(--link-color);--btn-default-hover-bg:transparent;--btn-default-hover-color:var(--link-hover-color);--btn-default-hover-border-color:var(--link-hover-color);--highlight-background:#f0f0f0;--highlight-foreground:#444;--highlight-gutter-background:#dedede;--highlight-gutter-foreground:#555}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}details,main{display:block}hr{box-sizing:content-box;overflow:visible;background-image:repeating-linear-gradient(-45deg,#ddd,#ddd 4px,transparent 4px,transparent 8px);border:0;height:2px;margin:20px 0}kbd,pre,samp{font-size:1em}samp{font-family:monospace,monospace}a{background:0 0;border-bottom:1px solid #ccc;color:var(--link-color);cursor:pointer;outline:0;text-decoration:none;overflow-wrap:break-word}abbr[title]{border-bottom:none;text-decoration:underline dotted}b,strong{font-weight:bolder}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{color:inherit;display:table;max-width:100%;white-space:normal}progress{vertical-align:baseline}textarea{overflow:auto}[type=checkbox],[type=radio],legend{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}summary{display:list-item}[hidden],template{display:none}::selection{background:#262a30;color:#eee}body,html{height:100%}body,h1,h2,h3,h4,h5,h6{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif}body{background:var(--body-bg-color);color:var(--text-color);line-height:2;min-height:100%;position:relative;transition:padding .2s ease-in-out}h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.5;margin:30px 0 15px}h1{font-size:1.5em}h2{font-size:1.375em}h3{font-size:1.25em}h4{font-size:1.125em}body,h5{font-size:1em}h6{font-size:.875em}p,table{margin:0 0 20px}a:hover{border-bottom-color:var(--link-hover-color);color:var(--link-hover-color)}embed,iframe,img,video{display:block;margin-left:auto;margin-right:auto;max-width:100%}blockquote{border-left:4px solid #ddd;color:var(--blockquote-color);margin:0;padding:0 15px}blockquote cite::before{content:'-';padding:0 5px}dt{font-weight:700}dd{margin:0;padding:0}.table-container{overflow:auto}table{border-collapse:collapse;border-spacing:0;font-size:.875em;width:100%}tbody tr:nth-of-type(odd){background:var(--table-row-odd-bg-color)}tbody tr:hover{background:var(--table-row-hover-bg-color)}caption,td,th{padding:8px}td,th{border:1px solid #ddd;border-bottom:3px solid #ddd}th{font-weight:700;padding-bottom:10px}td{border-bottom-width:1px}.btn{background:var(--btn-default-bg);border:2px solid var(--btn-default-border-color);border-radius:0;color:var(--btn-default-color);display:inline-block;font-size:.875em;line-height:2;transition:background-color .2s ease-in-out}.btn:hover{background:var(--btn-default-hover-bg);border-color:var(--btn-default-hover-border-color);color:var(--btn-default-hover-color)}.btn+.btn{margin:0 0 8px 8px}.btn .fa-fw{text-align:left;width:1.285714285714286em}.toggle{line-height:0}.toggle .toggle-line{background:#fff;display:block;height:2px;left:0;position:relative;top:0;transition:all .4s;width:100%}.toggle .toggle-line:not(:first-child){margin-top:3px}.toggle.toggle-arrow .toggle-line:first-child{left:50%;top:2px;transform:rotate(45deg);width:50%}.toggle.toggle-arrow .toggle-line:last-child{left:50%;top:-2px;transform:rotate(-45deg);width:50%}.toggle.toggle-close .toggle-line:nth-child(2){opacity:0}.toggle.toggle-close .toggle-line:first-child{top:5px;transform:rotate(45deg)}.toggle.toggle-close .toggle-line:last-child{top:-5px;transform:rotate(-45deg)}code,figure.highlight,kbd,pre{background:var(--highlight-background);color:var(--highlight-foreground)}figure.highlight,pre{line-height:1.6;margin:0 auto 20px}code,pre{font-family:consolas,Menlo,monospace,'PingFang SC','Microsoft YaHei'}code{border-radius:3px;font-size:.875em;padding:2px 4px;overflow-wrap:break-word}kbd{border:2px solid #ccc;border-radius:.2em;box-shadow:.1em .1em .2em rgba(0,0,0,.1);font-family:inherit;padding:.1em .3em;white-space:nowrap}figure.highlight,pre{position:relative}figure.highlight pre{border:0;margin:0;padding:10px 0}figure.highlight table{border:0;margin:0;width:auto}figure.highlight td{border:0;padding:0}figure.highlight figcaption,pre .caption,pre figcaption{background:var(--highlight-gutter-background);color:var(--highlight-foreground);display:flow-root;font-size:.875em;line-height:1.2;padding:.5em}figure.highlight figcaption a,pre .caption a,pre figcaption a{color:var(--highlight-foreground);float:right}figure.highlight figcaption a:hover,pre .caption a:hover,pre figcaption a:hover{border-bottom-color:var(--highlight-foreground)}figure.highlight .gutter{-moz-user-select:none;-ms-user-select:none;-webkit-user-select:none;user-select:none}figure.highlight .gutter pre{background:var(--highlight-gutter-background);color:var(--highlight-gutter-foreground);padding-left:10px;padding-right:10px;text-align:right}figure.highlight .code pre{padding-left:10px;width:100%}pre .caption,pre figcaption{margin-bottom:10px}.gist table{width:auto}.gist table td{border:0}pre{overflow:auto;padding:10px}pre code{background:0 0;padding:0;text-shadow:none}.blockquote-center{border-left:none;margin:40px 0;padding:0;position:relative;text-align:center}.blockquote-center::after,.blockquote-center::before{left:0;line-height:1;opacity:.6;position:absolute;width:100%}.blockquote-center::before{border-top:1px solid #ccc;text-align:left;top:-20px;content:'\f10d';font-family:'Font Awesome 5 Free';font-weight:900}.blockquote-center::after{border-bottom:1px solid #ccc;bottom:-20px;text-align:right;content:'\f10e';font-family:'Font Awesome 5 Free';font-weight:900}.blockquote-center div,.blockquote-center p{text-align:center}.group-picture{margin-bottom:20px}.group-picture .group-picture-row{display:flex;gap:3px;margin-bottom:3px}.group-picture .group-picture-column{flex:1}.group-picture .group-picture-column img{height:100%;margin:0;object-fit:cover;width:100%}.post-body .label{color:#555;padding:0 2px}.post-body .label.default{background:#f0f0f0}.post-body .label.primary{background:#efe6f7}.post-body .label.info{background:#e5f2f8}.post-body .label.success{background:#e7f4e9}.post-body .label.warning{background:#fcf6e1}.post-body .label.danger{background:#fae8eb}.post-body .link-grid{display:grid;grid-gap:1.5rem 1.5rem;gap:1.5rem 1.5rem;grid-template-columns:1fr 1fr;margin-bottom:20px;padding:1rem}@media (max-width:767px){.post-body .link-grid{grid-template-columns:1fr}}.post-body .link-grid .link-grid-container{border:solid #ddd;box-shadow:1rem 1rem .5rem rgba(0,0,0,.5);min-height:5rem;min-width:0;padding:.5rem;position:relative;transition:background .3s}.post-body .link-grid .link-grid-container:hover{animation:next-shake .5s;background:var(--card-bg-color)}.post-body .link-grid .link-grid-container:active{box-shadow:.5rem .5rem .25rem rgba(0,0,0,.5);transform:translate(.2rem,.2rem)}.post-body .link-grid .link-grid-container .link-grid-image{border:1px solid #ddd;border-radius:50%;box-sizing:border-box;height:5rem;padding:3px;position:absolute;width:5rem}.post-body .link-grid .link-grid-container p{margin:0 1rem 0 6rem}.post-body .link-grid .link-grid-container p:first-of-type{font-size:1.2em}.post-body .link-grid .link-grid-container p:last-of-type{font-size:.8em;line-height:1.3rem;opacity:.7}.post-body .link-grid .link-grid-container a{border:0;height:100%;left:0;position:absolute;top:0;width:100%}.post-body .tabs{margin-bottom:20px;padding-top:10px}.post-body .tabs ul.nav-tabs,.tabs-comment ul.nav-tabs{display:flex;flex-wrap:wrap;justify-content:center;margin:0;padding:0}@media (max-width:413px){.post-body .tabs ul.nav-tabs,.tabs-comment ul.nav-tabs{display:block;margin-bottom:5px}}.post-body .tabs ul.nav-tabs li.tab,.tabs-comment ul.nav-tabs li.tab{border-bottom:1px solid #ddd;border-left:1px solid transparent;border-right:1px solid transparent;border-radius:0 0 0 0;border-top:3px solid transparent;flex-grow:1;list-style-type:none}@media (max-width:413px){.post-body .tabs ul.nav-tabs li.tab,.tabs-comment ul.nav-tabs li.tab{border-bottom:1px solid transparent;border-left:3px solid transparent;border-right:1px solid transparent;border-top:1px solid transparent;border-radius:0}}.post-body .tabs ul.nav-tabs li.tab a,.tabs-comment ul.nav-tabs li.tab a{border-bottom:initial;display:block;line-height:1.8;padding:.25em .75em;text-align:center;transition:all .2s ease-out}.post-body .tabs ul.nav-tabs li.tab a i,.tabs-comment ul.nav-tabs li.tab a i{width:1.285714285714286em}.post-body .tabs ul.nav-tabs li.tab.active,.tabs-comment ul.nav-tabs li.tab.active{border-color:#fc6423 #ddd transparent}@media (max-width:413px){.post-body .tabs ul.nav-tabs li.tab.active,.tabs-comment ul.nav-tabs li.tab.active{border-color:#ddd #ddd #ddd #fc6423}}.post-body .tabs ul.nav-tabs li.tab.active a,.tabs-comment ul.nav-tabs li.tab.active a{cursor:default}.post-body .tabs .tab-content,.tabs-comment .tab-content{border:1px solid #ddd;border-radius:0 0 0 0;border-top-color:transparent}@media (max-width:413px){.post-body .tabs .tab-content,.tabs-comment .tab-content{border-radius:0;border-top-color:#ddd}}.post-body .tabs .tab-content .tab-pane,.tabs-comment .tab-content .tab-pane{padding:20px 20px 0}.post-body .tabs .tab-content .tab-pane:not(.active),.tabs-comment .tab-content .tab-pane:not(.active){display:none}.post-body .note{border-radius:3px;margin-bottom:20px;padding:1em;position:relative;border:1px solid #eee;border-left-width:5px}.post-body .note summary{cursor:pointer;outline:0}.post-body .note summary p{display:inline}.post-body .note h2,.post-body .note h3,.post-body .note h4,.post-body .note h5,.post-body .note h6{border-bottom:initial;margin:0;padding-top:0}.post-body .note blockquote:first-child,.post-body .note img:first-child,.post-body .note ol:first-child,.post-body .note p:first-child,.post-body .note pre:first-child,.post-body .note table:first-child,.post-body .note ul:first-child{margin-top:0}.post-body .note blockquote:last-child,.post-body .note img:last-child,.post-body .note ol:last-child,.post-body .note p:last-child,.post-body .note pre:last-child,.post-body .note table:last-child,.post-body .note ul:last-child{margin-bottom:0}.post-body .note.default{border-left-color:#777}.post-body .note.default h2,.post-body .note.default h3,.post-body .note.default h4,.post-body .note.default h5,.post-body .note.default h6{color:#777}.post-body .note.primary{border-left-color:#6f42c1}.post-body .note.primary h2,.post-body .note.primary h3,.post-body .note.primary h4,.post-body .note.primary h5,.post-body .note.primary h6{color:#6f42c1}.post-body .note.info{border-left-color:#428bca}.post-body .note.info h2,.post-body .note.info h3,.post-body .note.info h4,.post-body .note.info h5,.post-body .note.info h6{color:#428bca}.post-body .note.success{border-left-color:#5cb85c}.post-body .note.success h2,.post-body .note.success h3,.post-body .note.success h4,.post-body .note.success h5,.post-body .note.success h6{color:#5cb85c}.post-body .note.warning{border-left-color:#f0ad4e}.post-body .note.warning h2,.post-body .note.warning h3,.post-body .note.warning h4,.post-body .note.warning h5,.post-body .note.warning h6{color:#f0ad4e}.post-body .note.danger{border-left-color:#d9534f}.post-body .note.danger h2,.post-body .note.danger h3,.post-body .note.danger h4,.post-body .note.danger h5,.post-body .note.danger h6{color:#d9534f}.mermaid{margin-bottom:20px;text-align:center}.pagination .next,.pagination .page-number,.pagination .prev{display:inline-block;margin:-1px 10px 0;padding:0 10px}.pagination .space{display:inline-block}@media (max-width:767px){.pagination .next,.pagination .page-number,.pagination .prev,.pagination .space{margin:0 5px}}.pagination{border-top:1px solid #eee;margin:120px 0 0}.pagination .next,.pagination .page-number,.pagination .prev{border-bottom:0;border-top:1px solid #eee;transition:border-color .2s ease-in-out}.pagination .next:hover,.pagination .page-number:hover,.pagination .prev:hover{border-top-color:var(--link-hover-color)}@media (max-width:767px){.pagination{border-top:0}.pagination .next,.pagination .page-number,.pagination .prev{border-bottom:1px solid #eee;border-top:0}.pagination .next:hover,.pagination .page-number:hover,.pagination .prev:hover{border-bottom-color:var(--link-hover-color)}}.pagination .space{margin:0;padding:0}.pagination .page-number.current{background:#ccc;border-color:#ccc;color:var(--content-bg-color)}.comments{margin-top:60px;overflow:hidden}.comment-button-group{display:flex;flex-wrap:wrap;justify-content:center;margin:1em 0}.comment-button-group .comment-button{margin:.1em .2em}.comment-button-group .comment-button.active{background:var(--btn-default-hover-bg);border-color:var(--btn-default-hover-border-color);color:var(--btn-default-hover-color)}.comment-position{display:none}.comment-position.active,.menu-item a{display:block}.tabs-comment{margin-top:4em;padding-top:0}.tabs-comment .comments{margin-top:0;padding-top:0}.headband{background:#222;height:3px}@media (max-width:991px){.headband{display:none}}.header{background:var(--content-bg-color)}.header-inner{margin:0 auto;width:700px}@media (min-width:1200px){.header-inner{width:800px}}@media (min-width:1600px){.header-inner{width:900px}}.site-brand-container{display:flex;flex-shrink:0;padding:0 10px}.use-motion .header,.use-motion .site-brand-container .toggle{opacity:0}.site-meta{flex-grow:1;text-align:center}@media (max-width:767px){.site-meta{text-align:center}}.custom-logo-image{margin-top:20px}@media (max-width:991px){.custom-logo-image{display:none}}.brand{border-bottom:0;color:var(--brand-color);display:inline-block;padding:0 40px}.brand:hover{color:var(--brand-hover-color)}.site-title{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;font-size:1.375em;font-weight:400;margin:0}.site-subtitle{color:#999;font-size:.8125em;margin:10px 0}.use-motion .custom-logo-image,.use-motion .site-subtitle,.use-motion .site-title{opacity:0;position:relative;top:-10px}.site-nav-right,.site-nav-toggle{display:none}@media (max-width:767px){.site-nav-right,.site-nav-toggle{display:flex;flex-direction:column;justify-content:center}}.site-nav-right .toggle,.site-nav-toggle .toggle{color:var(--text-color);padding:10px;width:22px}.site-nav-right .toggle .toggle-line,.site-nav-toggle .toggle .toggle-line{background:var(--text-color);border-radius:1px}@media (max-width:767px){.site-nav{--scroll-height:0;height:0;overflow:hidden;transition:height .2s ease-in-out}body:not(.site-nav-on) .site-nav .animated{animation:none}body.site-nav-on .site-nav{height:var(--scroll-height)}}.menu{margin:0;text-align:center}.menu-item{display:inline-block;list-style:none;margin:0 10px}@media (max-width:767px){.menu-item{display:block;margin-top:10px}.menu-item.menu-item-search{display:none}}.menu-item a{border-bottom:0;font-size:.8125em;transition:border-color .2s ease-in-out}.menu-item a.menu-item-active,.menu-item a:hover{background:var(--menu-item-bg-color)}.menu-item .fa,.menu-item .fab,.menu-item .far,.menu-item .fas{margin-right:8px}.menu-item .badge{display:inline-block;font-weight:700;line-height:1;margin-left:.35em;margin-top:.35em;text-align:center;white-space:nowrap}@media (max-width:767px){.menu-item .badge{float:right;margin-left:0}}.use-motion .menu-item{visibility:hidden}.github-corner :hover .octo-arm{animation:octocat-wave 560ms ease-in-out}.github-corner svg{color:#fff;fill:#222;position:absolute;right:0;top:0;z-index:1000}@media (max-width:991px){.github-corner{display:none}.github-corner .github-corner:hover .octo-arm{animation:none}.github-corner .github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}@media (max-width:767px){.github-corner svg{top:inherit}}.sidebar-inner{color:#999;padding:18px 10px;text-align:center}.site-overview{max-height:var(--sidebar-wrapper-height)}.site-overview-item:not(:first-child){margin-top:10px}.cc-license .cc-opacity{border-bottom:0;opacity:.7}.cc-license .cc-opacity:hover{opacity:.9}.cc-license img,.post-reward div{display:inline-block}.site-author-image{border:2px solid #333;max-width:96px;padding:2px}.site-author-name{color:#f5f5f5;font-weight:400;margin:5px 0 0}.site-description{color:#999;font-size:1em;margin-top:5px}.links-of-author a,.links-of-blogroll{font-size:.8125em}.links-of-author .fa,.links-of-author .fab,.links-of-author .far,.links-of-author .fas{margin-right:2px}.sidebar .sidebar-button:not(:first-child){margin-top:15px}.sidebar .sidebar-button button{background:0 0;color:#fc6423;cursor:pointer;line-height:2;padding:0 15px;border:1px solid #fc6423;border-radius:4px}.sidebar .sidebar-button button:hover{background:#fc6423;color:#fff}.sidebar .sidebar-button button .fa,.sidebar .sidebar-button button .fab,.sidebar .sidebar-button button .far,.sidebar .sidebar-button button .fas{margin-right:5px}.links-of-blogroll-title{font-size:.875em;font-weight:600;margin-top:0}.links-of-blogroll-list{list-style:none;margin:0;padding:0}.sidebar-dimmer{display:none}@media (max-width:991px){.sidebar-dimmer{background:#000;display:block;height:100%;left:0;opacity:0;position:fixed;top:0;transition:visibility .4s,opacity .4s;visibility:hidden;width:100%;z-index:1100}.sidebar-active .sidebar-dimmer{opacity:.7;visibility:visible}}.sidebar-nav{display:none;margin:0;padding-bottom:20px;padding-left:0}.sidebar-nav-active .sidebar-nav{display:block}.sidebar-nav li{border-bottom:1px solid transparent;color:#666;cursor:pointer;display:inline-block;font-size:.875em}.sidebar-nav li.sidebar-nav-overview{margin-left:10px}.sidebar-nav li:hover{color:#f5f5f5}.post-toc .nav .active>a,.sidebar-overview-active .sidebar-nav-overview,.sidebar-toc-active .sidebar-nav-toc{border-bottom-color:#87daff;color:#87daff}.post-toc .nav .active-current>a,.post-toc .nav .active-current>a:hover,.sidebar-overview-active .sidebar-nav-overview:hover,.sidebar-toc-active .sidebar-nav-toc:hover{color:#87daff}.sidebar-panel-container{max-height:var(--sidebar-wrapper-height);overflow-x:hidden;overflow-y:auto}.sidebar-panel{display:none}.sidebar-overview-active .site-overview-wrap{display:flex;flex-direction:column;justify-content:center}.sidebar-toc-active .post-toc-wrap{display:block}.sidebar-toggle{bottom:45px;height:12px;padding:6px 5px;width:14px;background:#222;cursor:pointer;opacity:.8;position:fixed;z-index:1300;left:30px}@media (max-width:991px){.sidebar-toggle{left:20px}}.sidebar-toggle:hover{opacity:1}@media (max-width:991px){.sidebar-toggle{opacity:1}}.sidebar-toggle:hover .toggle-line{background:#87daff}@media (any-hover:hover){body:not(.sidebar-active) .sidebar-toggle:hover .toggle-line:first-child{left:50%;top:2px;transform:rotate(45deg);width:50%}body:not(.sidebar-active) .sidebar-toggle:hover .toggle-line:last-child{left:50%;top:-2px;transform:rotate(-45deg);width:50%}}.sidebar-active .sidebar-toggle .toggle-line:nth-child(2){opacity:0}.sidebar-active .sidebar-toggle .toggle-line:first-child{top:5px;transform:rotate(45deg)}.sidebar-active .sidebar-toggle .toggle-line:last-child{top:-5px;transform:rotate(-45deg)}.post-toc{font-size:.875em}.post-toc ol{list-style:none;margin:0;padding:0 2px 5px 10px;text-align:left}.post-toc ol>ol{padding-left:0}.post-toc ol a{transition:all .2s ease-in-out}.post-toc .nav-item{line-height:1.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.back-to-top span,.post-toc .nav .nav-child{display:none}.post-toc .nav .active-current>.nav-child,.post-toc .nav .active-current>.nav-child>.nav-item,.post-toc .nav .active>.nav-child{display:block}.site-state{display:flex;flex-wrap:wrap;justify-content:center;line-height:1.4}.site-state-item{padding:0 15px}.site-state-item a{border-bottom:0;display:block}.site-state-item-count{display:block;font-size:1.25em;font-weight:600}.footer,.site-state-item-name{color:inherit;font-size:.875em}.footer{color:#999}.footer.footer-fixed{bottom:0;left:0;position:absolute;right:0}.footer-inner{box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;margin:0 auto;width:700px}@media (min-width:1200px){.footer-inner{width:800px}}@media (min-width:1600px){.footer-inner{width:900px}}.use-motion .footer{opacity:0}.languages{display:inline-block;font-size:1.125em;position:relative}.languages .lang-select-label span{margin:0 .5em}.languages .lang-select{height:100%;left:0;opacity:0;position:absolute;top:0;width:100%}.with-love{color:gray;display:inline-block;margin:0 5px}.back-to-top{font-size:12px;bottom:-100px;box-sizing:border-box;color:#fff;padding:0 6px;transition:bottom .2s ease-in-out;background:#222;cursor:pointer;opacity:.8;position:fixed;z-index:1300;left:30px;width:24px}@media (max-width:991px){.back-to-top{left:20px}}.back-to-top:hover{opacity:1;color:#87daff}@media (max-width:991px){.back-to-top{opacity:1}}.back-to-top.back-to-top-on{bottom:19px}.noscript-warning{background-color:#f55;color:#fff;font-family:sans-serif;font-size:1rem;font-weight:700;left:0;position:fixed;text-align:center;top:0;width:100%;z-index:1500}.rtl.post-body a,.rtl.post-body h1,.rtl.post-body h2,.rtl.post-body h3,.rtl.post-body h4,.rtl.post-body h5,.rtl.post-body h6,.rtl.post-body li,.rtl.post-body ol,.rtl.post-body p,.rtl.post-body ul{direction:rtl;font-family:UKIJ Ekran}.rtl.post-title{font-family:UKIJ Ekran}.use-motion .collection-header,.use-motion .comments,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{visibility:hidden}.posts-collapse .post-content{margin-bottom:35px;margin-left:35px;position:relative}@media (max-width:767px){.posts-collapse .post-content{margin-left:0;margin-right:0}}.posts-collapse .post-content .collection-title{font-size:1.125em;position:relative}.posts-collapse .post-content .collection-title::before{background:#999;border:1px solid #fff;margin-left:-6px;margin-top:-4px;position:absolute;top:50%;border-radius:50%;content:' ';height:10px;width:10px}.posts-collapse .post-content .collection-year{font-size:1.5em;font-weight:700;margin:60px 0;position:relative}.posts-collapse .post-content .collection-year::before{background:#bbb;margin-left:-4px;margin-top:-4px;position:absolute;top:50%;border-radius:50%;content:' ';height:8px;width:8px}.posts-collapse .post-content .collection-header{display:block;margin-left:20px}.posts-collapse .post-content .collection-header small{color:#bbb;margin-left:5px}.posts-collapse .post-content .post-header{border-bottom:1px dashed #ccc;margin:30px 2px 0;padding-left:15px;position:relative;transition:border .2s ease-in-out}.posts-collapse .post-content .post-header::before{background:#bbb;border:1px solid #fff;left:-6px;position:absolute;top:.75em;transition:background .2s ease-in-out;border-radius:50%;content:' ';height:6px;width:6px}.posts-collapse .post-content .post-header:hover{border-bottom-color:#666}.posts-collapse .post-content .post-header:hover::before{background:#222}.posts-collapse .post-content .post-meta-container{display:inline;font-size:.75em;margin-right:10px}.posts-collapse .post-content .post-title,ul.breadcrumb li{display:inline}.posts-collapse .post-content .post-title a{border-bottom:0;color:var(--link-color)}.posts-collapse .post-content .post-title .fa-external-link-alt{font-size:.875em;margin-left:5px}.posts-collapse .post-content::before{background:#f5f5f5;content:' ';height:100%;margin-left:-2px;position:absolute;top:1.25em;width:4px}.post-body{font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;overflow-wrap:break-word}@media (min-width:1200px){.post-body{font-size:1.125em}}@media (min-width:992px){.post-body{text-align:justify}}@media (max-width:991px){.post-body{text-align:justify}}.post-body h1 .header-anchor,.post-body h1 .headerlink,.post-body h2 .header-anchor,.post-body h2 .headerlink,.post-body h3 .header-anchor,.post-body h3 .headerlink,.post-body h4 .header-anchor,.post-body h4 .headerlink,.post-body h5 .header-anchor,.post-body h5 .headerlink,.post-body h6 .header-anchor,.post-body h6 .headerlink{border-bottom-style:none;color:inherit;float:right;font-size:.875em;margin-left:10px;opacity:0}.post-body h1 .header-anchor::before,.post-body h1 .headerlink::before,.post-body h2 .header-anchor::before,.post-body h2 .headerlink::before,.post-body h3 .header-anchor::before,.post-body h3 .headerlink::before,.post-body h4 .header-anchor::before,.post-body h4 .headerlink::before,.post-body h5 .header-anchor::before,.post-body h5 .headerlink::before,.post-body h6 .header-anchor::before,.post-body h6 .headerlink::before{content:'\f0c1';font-family:'Font Awesome 5 Free';font-weight:900}.post-body h1:hover .header-anchor,.post-body h1:hover .headerlink,.post-body h2:hover .header-anchor,.post-body h2:hover .headerlink,.post-body h3:hover .header-anchor,.post-body h3:hover .headerlink,.post-body h4:hover .header-anchor,.post-body h4:hover .headerlink,.post-body h5:hover .header-anchor,.post-body h5:hover .headerlink,.post-body h6:hover .header-anchor,.post-body h6:hover .headerlink{opacity:.5}.post-body h1:hover .header-anchor:hover,.post-body h1:hover .headerlink:hover,.post-body h2:hover .header-anchor:hover,.post-body h2:hover .headerlink:hover,.post-body h3:hover .header-anchor:hover,.post-body h3:hover .headerlink:hover,.post-body h4:hover .header-anchor:hover,.post-body h4:hover .headerlink:hover,.post-body h5:hover .header-anchor:hover,.post-body h5:hover .headerlink:hover,.post-body h6:hover .header-anchor:hover,.post-body h6:hover .headerlink:hover{opacity:1}.post-body .exturl .fa{font-size:.875em;margin-left:4px}.post-body .figure .caption,.post-body .image-caption{color:#999;font-size:.875em;font-weight:700;line-height:1;margin:-20px auto 15px;text-align:center}.post-body embed,.post-body iframe,.post-body img,.post-body video{margin-bottom:20px}.post-body .video-container{height:0;margin-bottom:20px;overflow:hidden;padding-top:75%;position:relative;width:100%}.post-body .video-container embed,.post-body .video-container iframe,.post-body .video-container object{height:100%;left:0;margin:0;position:absolute;top:0;width:100%}.post-gallery{display:flex;min-height:200px}.post-gallery .post-gallery-image{flex:1}.post-gallery .post-gallery-image:not(:first-child){clip-path:polygon(40px 0,100% 0,100% 100%,0 100%);margin-left:-20px}.post-gallery .post-gallery-image:not(:last-child){margin-right:-20px}.post-gallery .post-gallery-image img{height:100%;object-fit:cover;opacity:1;width:100%}.posts-expand .post-gallery{margin-bottom:60px}.posts-collapse .post-gallery{margin:15px 0}.posts-expand .post-header{font-size:1.125em;text-align:center}.posts-expand .post-title{font-size:1.5em;font-weight:400;margin:initial;overflow-wrap:break-word}.posts-expand .post-title-link{border-bottom:0;color:var(--link-color);display:inline-block;position:relative}.posts-expand .post-title-link::before{background:var(--link-color);bottom:0;content:'';height:2px;left:0;position:absolute;transform:scaleX(0);transition:transform .2s ease-in-out;width:100%}.posts-expand .post-title-link:hover::before{transform:scaleX(1)}.posts-expand .post-title-link .fa-external-link-alt{font-size:.875em;margin-left:5px}.post-sticky-flag{display:inline-block;margin-right:8px;transform:rotate(30deg)}.posts-expand .post-meta-container{color:#999;font-family:Lato,'PingFang SC','Microsoft YaHei',sans-serif;font-size:.75em;margin-top:3px}.posts-expand .post-meta-container .post-description{font-size:.875em;margin-top:2px}.posts-expand .post-meta-container time{border-bottom:1px dashed #999;cursor:pointer}.post-meta{display:flex;flex-wrap:wrap;justify-content:center}:not(.post-meta-break)+.post-meta-item::before{content:'|';margin:0 .5em}.post-meta-item-icon{margin-right:3px}@media (max-width:991px){.post-meta-item-text{display:none}}.post-meta-break{flex-basis:100%;height:0}.post-nav{border-top:1px solid #eee;display:flex;gap:30px;justify-content:space-between;margin-top:1em;padding:10px 5px 0}.post-nav-item{flex:1}.post-nav-item a{border-bottom:0;display:block;font-size:.875em;line-height:1.6}.post-nav-item a:active{top:2px}.post-nav-item .fa{font-size:.75em}.post-nav-item:first-child .fa{margin-right:5px}.post-nav-item:last-child{text-align:right}.post-nav-item:last-child .fa{margin-left:5px}.post-footer{display:flex;flex-direction:column;justify-content:center}.post-eof{background:#ccc;height:1px;margin:80px auto 60px;width:8%}.post-block:last-of-type .post-eof{display:none}.post-tags{margin-top:40px;text-align:center}.post-tags a{display:inline-block;font-size:.8125em}.post-tags a:not(:last-child){margin-right:10px}.post-widgets{border-top:1px solid #eee;margin-top:15px;text-align:center}.wp_rating{height:20px;line-height:20px;margin-top:10px;padding-top:6px;text-align:center}.social-like{display:flex;font-size:.875em;justify-content:center;text-align:center}.reward-container{margin:1em 0 0;padding:1em 0;text-align:center}.reward-container button{background:0 0;color:#87daff;cursor:pointer;line-height:2;padding:0 15px;border:2px solid #87daff;border-radius:2px;outline:0;transition:all .2s ease-in-out;vertical-align:text-top}.reward-container button:hover{background:#87daff;color:#fff}.post-reward{display:none;padding-top:20px}.post-reward div span,.post-reward.active{display:block}.post-reward img{display:inline-block;margin:.8em 2em 0;max-width:100%;width:180px}.category-all-page .category-all-title,.tag-cloud{text-align:center}.category-all-page .category-all{margin-top:20px}.category-all-page .category-list{list-style:none;margin:0;padding:0}.category-all-page .category-list-item{margin:5px 10px}.category-all-page .category-list-count{color:#bbb}.category-all-page .category-list-count::before{content:' ('}.category-all-page .category-list-count::after{content:') '}.category-all-page .category-list-child{padding-left:10px}.event-list hr{background:#222;margin:20px 0 45px}.event-list hr::after{background:#222;color:#fff;content:'NOW';display:inline-block;font-weight:700;padding:0 5px}.event-list .event{--event-background:#222;--event-foreground:#bbb;--event-title:#fff;background:var(--event-background);padding:15px}.event-list .event .event-summary{border-bottom:0;color:var(--event-title);margin:0;padding:0 0 0 35px;position:relative}.event-list .event .event-summary::before{animation:dot-flash 1s alternate infinite ease-in-out;background:var(--event-title);left:0;margin-top:-6px;position:absolute;top:50%;border-radius:50%;content:' ';height:12px;width:12px}.event-list .event:nth-of-type(odd) .event-summary::before{animation-delay:.5s}.event-list .event:not(:last-child){margin-bottom:20px}.event-list .event .event-relative-time{color:var(--event-foreground);display:inline-block;font-size:12px;font-weight:400;padding-left:12px}.event-list .event .event-details{color:var(--event-foreground);display:block;line-height:18px;padding:6px 0 6px 35px}.event-list .event .event-details::before{color:var(--event-foreground);display:inline-block;margin-right:9px;width:14px;font-family:'Font Awesome 5 Free';font-weight:900}.event-list .event .event-details.event-location::before{content:'\f041'}.event-list .event .event-details.event-duration::before{content:'\f017'}.event-list .event .event-details.event-description::before{content:'\f024'}.event-list .event-past{--event-background:#f5f5f5;--event-foreground:#999;--event-title:#222}ul.breadcrumb{font-size:.75em;list-style:none;margin:1em 0;padding:0 2em;text-align:center}ul.breadcrumb li:not(:first-child)::before{content:'/\00a0';font-weight:400;padding:.5em}ul.breadcrumb li:last-child{font-weight:700}.tag-cloud a{display:inline-block;margin:10px}.tag-cloud-0{border-bottom-color:#aaa;color:#aaa}.tag-cloud-1{border-bottom-color:#9a9a9a;color:#9a9a9a}.tag-cloud-2{border-bottom-color:#8b8b8b;color:#8b8b8b}.tag-cloud-3{border-bottom-color:#7c7c7c;color:#7c7c7c}.tag-cloud-4{border-bottom-color:#6c6c6c;color:#6c6c6c}.tag-cloud-5{border-bottom-color:#5d5d5d;color:#5d5d5d}.tag-cloud-6{border-bottom-color:#4e4e4e;color:#4e4e4e}.tag-cloud-7{border-bottom-color:#3e3e3e;color:#3e3e3e}.tag-cloud-8{border-bottom-color:#2f2f2f;color:#2f2f2f}.tag-cloud-9{border-bottom-color:#202020;color:#202020}.tag-cloud-10{border-bottom-color:#111;color:#111}.search-active{overflow:hidden}.search-pop-overlay{background:0 0;display:flex;height:100%;left:0;position:fixed;top:0;transition:visibility .4s,background .4s;visibility:hidden;width:100%;z-index:1400}.search-active .search-pop-overlay{background:rgba(0,0,0,.3);visibility:visible}.search-popup{background:var(--card-bg-color);border-radius:5px;height:80%;margin:auto;transform:scale(0);transition:transform .4s;width:700px}.search-active .search-popup{transform:scale(1)}@media (max-width:767px){.search-popup{border-radius:0;height:100%;width:100%}}.search-popup .popup-btn-close,.search-popup .search-icon{color:#999;font-size:18px;padding:0 10px}.search-popup .popup-btn-close{cursor:pointer}.search-popup .popup-btn-close:hover .fa{color:#222}.search-popup .search-header{background:#eee;border-top-left-radius:5px;border-top-right-radius:5px;display:flex;padding:5px}.search-popup input.search-input{background:0 0;border:0;outline:0;width:100%}.search-popup input.search-input::-webkit-search-cancel-button{display:none}.search-popup .search-result-container{height:calc(100% - 55px);overflow:auto;padding:5px 25px}.search-popup .search-result-container hr{margin:5px 0 10px}.search-popup .search-result-container hr:first-child{display:none}.search-popup .search-result-list{margin:0 5px;padding:0}.search-popup a.search-result-title{font-weight:700}.search-popup p.search-result{border-bottom:1px dashed #ccc;padding:5px 0}.search-popup .search-input-container{flex-grow:1;padding:2px}.search-popup .no-result{display:flex}.search-popup .search-result-list{width:100%}.search-popup .search-result-icon{color:#ccc;margin:auto}mark.search-keyword{background:0 0;border-bottom:1px dashed #ff2a2a;color:#ff2a2a;font-weight:700}.use-motion .animated{animation-fill-mode:none;visibility:inherit}.use-motion .sidebar .animated{animation-fill-mode:both}.btn{padding:0 10px}.headband{display:none}.pagination{text-align:left}@media (max-width:767px){.pagination{margin:80px 0 0;text-align:center}}.footer{background:var(--content-bg-color);color:var(--text-color);padding:10px 0}.footer-inner{text-align:left}@media (max-width:767px){.footer-inner{text-align:center}}.header-inner{align-items:center;display:flex;padding:20px 0}@media (max-width:767px){.header-inner{display:block;padding:10px 0}}.site-meta{line-height:normal}.site-meta .brand{padding:2px 1px}@media (max-width:767px){.site-meta .brand{display:block}}.site-meta .site-title{font-weight:bolder}.logo-line{background:var(--brand-color);display:block;height:2px;margin:0 auto;width:75%}@media (max-width:767px){.logo-line{display:none}}.use-motion .logo-line:first-of-type{transform:scaleX(0);transform-origin:left}.use-motion .logo-line:last-of-type{transform:scaleX(0);transform-origin:right}.site-subtitle{display:none}.site-nav{flex-grow:1}@media (max-width:767px){.site-nav{padding:10px 10px 0}}.menu{padding:0}.menu .menu-item{margin:0}@media (max-width:767px){.menu .menu-item{margin-top:5px}}.menu .menu-item a{border-radius:2px;padding:0 10px;transition-property:background}@media (max-width:767px){.menu .menu-item a{text-align:left}}.menu .menu-item .badge{background:#fff;border-radius:10px;color:#555;padding:1px 4px;text-shadow:1px 1px 0 rgba(0,0,0,.1)}.posts-expand.index .post-header{text-align:left}@media (max-width:767px){.posts-expand.index .post-header{text-align:center}}.posts-expand.index .post-meta-container{margin-top:5px}.posts-expand.index .post-meta{justify-content:flex-start}@media (max-width:767px){.posts-expand.index .post-meta{justify-content:center}}.posts-expand .post-eof{display:none}.posts-expand .post-block:not(:first-child){margin-top:120px}.posts-expand .post-header{margin-bottom:20px}.post-button,.posts-expand .post-tags{text-align:left}.posts-expand .post-tags a{background:var(--content-bg-color);border-bottom:0;padding:1px 5px}.posts-expand .post-tags a:hover{background:var(--menu-item-bg-color)}.posts-expand .post-nav{margin-top:40px}.post-button{margin-top:20px}.post-button .btn{background:0 0;border:0;border-bottom:2px solid var(--btn-default-border-color);padding:0;transition-property:border}.post-button .btn:hover{border-bottom-color:var(--btn-default-hover-border-color)}.main-inner{margin:0 auto;width:700px}@media (min-width:1200px){.main-inner{width:800px}}@media (min-width:1600px){.main-inner{width:900px}}@media (max-width:767px){.main-inner{padding-left:20px;padding-right:20px}.footer-inner,.header-inner,.main-inner{width:auto}}.main-inner{padding-bottom:80px}.post-block:first-of-type{padding-top:80px}@media (max-width:767px){.post-block:first-of-type{padding-top:60px}}@media (min-width:992px){.sidebar-active{padding-left:320px}}.sidebar{left:-320px;background:#222;bottom:0;box-shadow:inset 0 2px 6px #000;position:fixed;top:0;transition:all .2s ease-out;width:320px;z-index:1200}.sidebar-active .sidebar{left:0}.sidebar a{border-bottom-color:#555;color:#999}.sidebar a:hover{border-bottom-color:#eee;color:#eee}.links-of-author:not(:first-child){margin-top:15px}.links-of-author a{border-bottom-color:#555;display:inline-block;margin-bottom:10px;margin-right:10px;vertical-align:middle}.links-of-author a::before{background:#74f4ff;display:inline-block;margin-right:3px;transform:translateY(-2px);border-radius:50%;content:' ';height:4px;width:4px}.links-of-blogroll-item{padding:2px 10px}.links-of-blogroll-item a{box-sizing:border-box;display:inline-block;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sub-menu{margin:10px 0}.sub-menu .menu-item{display:inline-block}</style><noscript>
+    
+  </noscript>
+<script>function loadCss(l){var d=document,h=d.head,s=d.createElement('link');s.rel='stylesheet';s.href=l;!function e(f){if (d.body)return f();setTimeout(function(){e(f)})}(function(){h.appendChild(s);});}loadCss('/style.css');loadCss('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css');</script><noscript><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css"></noscript></head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">疯狂的茶几</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%8A%E5%85%B3%E9%94%AE%E8%B7%AF%E5%BE%84"><span class="nav-number">1.</span> <span class="nav-text">目标及关键路径</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E-PHP-5-6-x-%E7%A7%BB%E6%A4%8D%E5%88%B0-PHP-7-0-x"><span class="nav-number">2.</span> <span class="nav-text">从 PHP 5.6.x 移植到 PHP 7.0.x</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9%E7%9A%84%E5%8F%98%E6%9B%B4"><span class="nav-number">2.1.</span> <span class="nav-text">不向后兼容的变更</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E7%89%B9%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">新特性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">变化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Core"><span class="nav-number">3.1.</span> <span class="nav-text">Core</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CLI-server"><span class="nav-number">3.2.</span> <span class="nav-text">CLI server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#COM"><span class="nav-number">3.3.</span> <span class="nav-text">COM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Curl"><span class="nav-number">3.4.</span> <span class="nav-text">Curl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Date"><span class="nav-number">3.5.</span> <span class="nav-text">Date</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DBA"><span class="nav-number">3.6.</span> <span class="nav-text">DBA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOM"><span class="nav-number">3.7.</span> <span class="nav-text">DOM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EXIF"><span class="nav-number">3.8.</span> <span class="nav-text">EXIF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fileinfo"><span class="nav-number">3.9.</span> <span class="nav-text">Fileinfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter"><span class="nav-number">3.10.</span> <span class="nav-text">Filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FPM"><span class="nav-number">3.11.</span> <span class="nav-text">FPM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FTP"><span class="nav-number">3.12.</span> <span class="nav-text">FTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GD"><span class="nav-number">3.13.</span> <span class="nav-text">GD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GMP"><span class="nav-number">3.14.</span> <span class="nav-text">GMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash"><span class="nav-number">3.15.</span> <span class="nav-text">hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IMAP"><span class="nav-number">3.16.</span> <span class="nav-text">IMAP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Intl"><span class="nav-number">3.17.</span> <span class="nav-text">Intl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON"><span class="nav-number">3.18.</span> <span class="nav-text">JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LDAP"><span class="nav-number">3.19.</span> <span class="nav-text">LDAP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LiteSpeed"><span class="nav-number">3.20.</span> <span class="nav-text">LiteSpeed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#libxml"><span class="nav-number">3.21.</span> <span class="nav-text">libxml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mcrypt"><span class="nav-number">3.22.</span> <span class="nav-text">Mcrypt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysqli"><span class="nav-number">3.23.</span> <span class="nav-text">Mysqli</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysqlnd"><span class="nav-number">3.24.</span> <span class="nav-text">Mysqlnd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OCI8"><span class="nav-number">3.25.</span> <span class="nav-text">OCI8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ODBC"><span class="nav-number">3.26.</span> <span class="nav-text">ODBC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Opcache"><span class="nav-number">3.27.</span> <span class="nav-text">Opcache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSL"><span class="nav-number">3.28.</span> <span class="nav-text">OpenSSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pcntl"><span class="nav-number">3.29.</span> <span class="nav-text">Pcntl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCRE"><span class="nav-number">3.30.</span> <span class="nav-text">PCRE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDO"><span class="nav-number">3.31.</span> <span class="nav-text">PDO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDO-DBlib"><span class="nav-number">3.32.</span> <span class="nav-text">PDO_DBlib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDO-mysql"><span class="nav-number">3.33.</span> <span class="nav-text">PDO_mysql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDO-OCI"><span class="nav-number">3.34.</span> <span class="nav-text">PDO_OCI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDO-pgsql"><span class="nav-number">3.35.</span> <span class="nav-text">PDO_pgsql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Phar"><span class="nav-number">3.36.</span> <span class="nav-text">Phar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Phpdbg"><span class="nav-number">3.37.</span> <span class="nav-text">Phpdbg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reflection"><span class="nav-number">3.38.</span> <span class="nav-text">Reflection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session"><span class="nav-number">3.39.</span> <span class="nav-text">Session</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SOAP"><span class="nav-number">3.40.</span> <span class="nav-text">SOAP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPL"><span class="nav-number">3.41.</span> <span class="nav-text">SPL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQLite3"><span class="nav-number">3.42.</span> <span class="nav-text">SQLite3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Standard"><span class="nav-number">3.43.</span> <span class="nav-text">Standard</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streams"><span class="nav-number">3.44.</span> <span class="nav-text">Streams</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tokenizer"><span class="nav-number">3.45.</span> <span class="nav-text">Tokenizer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XMLReader"><span class="nav-number">3.46.</span> <span class="nav-text">XMLReader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XMLRPC"><span class="nav-number">3.47.</span> <span class="nav-text">XMLRPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSL"><span class="nav-number">3.48.</span> <span class="nav-text">XSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zlib"><span class="nav-number">3.49.</span> <span class="nav-text">Zlib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zip"><span class="nav-number">3.50.</span> <span class="nav-text">Zip</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">4.</span> <span class="nav-text">关键问题及解决思路</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="疯狂的茶几" src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">疯狂的茶几</p>
+  <div class="site-description" itemprop="description">懒人一个</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tomhjx" title="GitHub → https://github.com/tomhjx" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tom_hejiaxi@163.com" title="E-Mail → mailto:tom_hejiaxi@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/tomhjx" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.tomhjx.top/2015/12/03/PHP-Version-7-0-0-Published/">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="疯狂的茶几">
+      <meta itemprop="description" content="懒人一个">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯狂的茶几">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PHP Version 7.0.0 Published
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-12-03 15:00:00" itemprop="dateCreated datePublished" datetime="2015-12-03T15:00:00+08:00">2015-12-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2026-02-15 16:34:35" itemprop="dateModified" datetime="2026-02-15T16:34:35+08:00">2026-02-15</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>31k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>28 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="目标及关键路径"><a class="header-anchor" href="#目标及关键路径">¶</a>目标及关键路径</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.laruence.com/2015/12/04/3083.html">提升性能，预期提升30%+，实际提升了100%+</a>
+<ul>
+<li>降低内存占用, 提高缓存友好性, 降低执行的指令数
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2018/04/08/3170.html">优化ZVAL</a></p>
+<ul>
+<li>
+<p>ZVAL这个结构体的大小是(在64位系统)24个字节，在zval.value联合体中, zend_object_value是最大的长板, 它导致整个value需要16个字节</p>
+<ul>
+<li>优化结构，在64位环境下,现在只需要16个字节</li>
+</ul>
+</li>
+<li>
+<p>PHP中大量的结构体都是基于Hashtable实现的, 增删改查Hashtable的操作占据了大量的CPU时间, 而字符串要查找首先要求它的Hash值</p>
+<ul>
+<li>把一个字符串的Hash值计算好以后, 就存下来, 避免再次计算</li>
+</ul>
+</li>
+<li>
+<p>PHP的zval大部分都是按值传递, 写时拷贝的值, 但是有俩个例外, 就是对象和资源, 他们永远都是按引用传递, 这样就造成一个问题, 对象和资源在除了zval中的引用计数以外, 还需要一个全局的引用计数, 这样才能保证内存可以回收. 所以在PHP5的时代, 以对象为例, 它有俩套引用计数, 一个是zval中的, 另外一个是obj自身的计数。在获取object时，经过漫长的多次内存读取, 才能获取到真正的objec对象本身，效率低</p>
+<ul>
+<li>对于在zval的value字段中能保存下的值, 就不再对他们进行引用计数了, 而是在拷贝的时候直接赋值, 这样就省掉了大量的引用计数相关的操作</li>
+<li>标志位，方便判断是否需要进行引用计数</li>
+<li>PHP7中在取一个对象的类的时候，就会非常方便了, 直接zvalu.value.obj-&gt;ce即可，一些类所自定的handler也就可以很便捷的访问到了</li>
+</ul>
+</li>
+<li>
+<p>因为引用计数是作用在zval的, 那么就会导致如果要拷贝一个字符串类型的zval, 我们别无他法只能复制这个字符串</p>
+<ul>
+<li>用value来保存一个指针, 这个指针指向这个具体的值, 引用计数也随之作用于这个值上, 而不在是作用于zval上了.</li>
+</ul>
+</li>
+<li>
+<p>PHP5的时代, 采用的是写时分离，同一个变量，只要曾经被引用过，再被赋值，就会触发变量复制（分离），拖慢性能</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.laruence.com/2018/04/08/3179.html">zval不存储引用计数，而独立了zend_reference来表示引用，所以zval不存在写时复制</a></li>
+</ul>
+</li>
+<li>
+<p>zval在PHP5的时代，也常作为临时变量来高频使用，并在使用过程中也会在堆内存分配给它</p>
+<ul>
+<li>zval预先分配，移除了MAKE_STD_ZVAL/ALLOC_ZVAL宏, 不再支持存堆内存上申请zval. 函数内部使用的zval要么来自外面输入, 要么使用在栈上分配的临时zval</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2020/02/25/3182.html">优化HashTable</a></p>
+<ul>
+<li>Hashtable在PHP中，应用最多的是保存各种zval, 而PHP5的HashTable设计的太通用
+<ul>
+<li>可以设计为专门为了存储zval而优化, 从而能减少内存占用。</li>
+<li>通过基于位操作来设计存储方案，节省内存</li>
+</ul>
+</li>
+<li>缓存局部性问题， 因为PHP5的Hashtable的Bucket，包括zval都是独立分配的，并且采用了List来串Hashtable中的所有元素，会导致在遍历或者顺序访问一个数组的时候，缓存不友好。
+<ul>
+<li>数据独立保存到一个连续数组，遍历时就可以顺序访问一块连续的内存,zval直接保存到数组元素中，在绝大部分情况下（不需要外部指针的内容，比如long，bool之类的）就可以不需要任何额外的zval指针解引用了，缓存局部性友好</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2020/03/23/5605.html">优化OBJECT</a></p>
+<ul>
+<li>在PHP5中，只有resource和object是引用传递，也就是说在赋值，传递的时候都是传递的本身，也正因为如此，Object和Resource除了使用了Zval的引用计数以外，还采用了一套独立自身的计数系统
+<ul>
+<li>zval中直接保存了zend_object对象的指针，统一并简化引用计数方案</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>编译优化</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.laruence.com/2015/06/19/3063.html">GCC PGO</a>，尝试分析PGO都做了些什么优化, 然后把一些通用的优化手工Apply到PHP7中</li>
+<li>可通过产品场景训练GCC</li>
+</ul>
+</li>
+<li>
+<p>缓存优化</p>
+<ul>
+<li>默认的内存是以4KB分页的，而虚拟地址和内存地址是需要转换的， 而这个转换是要查表的，CPU为了加速这个查表过程都会内建TLB（Translation Lookaside Buffer）， 显而易见如果虚拟页越小，表里的条目数也就越多，而TLB大小是有限的，条目数越多TLB的Cache Miss也就会越高
+<ul>
+<li>如果我们能启用大内存页就能间接降低这个TLB Cache Miss，<a target="_blank" rel="noopener" href="https://www.laruence.com/2015/10/02/3069.html">新的Linux Kernel启用Hugepage可以达到这个目的</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.laruence.com/2015/12/04/3086.html">让PHP7达到最高性能的几个Tips</a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="从-PHP-5-6-x-移植到-PHP-7-0-x"><a class="header-anchor" href="#从-PHP-5-6-x-移植到-PHP-7-0-x">¶</a>从 PHP 5.6.x 移植到 PHP 7.0.x</h1>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/migration70.php">更多细节可以阅读这里</a></p>
+<h2 id="不向后兼容的变更"><a class="header-anchor" href="#不向后兼容的变更">¶</a>不向后兼容的变更</h2>
+<ul>
+<li>
+<p>set_exception_handler() 不再保证收到的一定是 Exception 对象</p>
+</li>
+<li>
+<p>当内部构造器失败的时候，总是抛出异常</p>
+</li>
+<li>
+<p>解析错误会抛出 ParseError 异常。 对于 eval() 函数，需要将其包含到一个 catch 代码块中来处理解析错误。</p>
+</li>
+<li>
+<p>原有的 E_STRICT 警告都被迁移到其他级别。 E_STRICT 常量会被保留，所以调用 error_reporting(E_ALL|E_STRICT) 不会引发错误。</p>
+</li>
+<li>
+<p>对变量、属性和方法的间接调用现在将严格遵循从左到右的顺序来解析，而不是之前的混杂着几个特殊案例的情况。</p>
+</li>
+<li>
+<p>关于list()处理方式的变更</p>
+<ul>
+<li>
+<p>list() 现在会按照变量定义的顺序来给他们进行赋值，而非反过来的顺序。 通常来说，这只会影响list() 与数组的[]操作符一起使用的案例</p>
+</li>
+<li>
+<p>list() 结构现在不再能是空的。</p>
+</li>
+<li>
+<p>list() 不再能解开字符串（string）变量。 你可以使用str_split()来代替它。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>在 PHP 5中，在以引用方式传递函数参数时，使用冗余的括号对可以隐匿严格标准 的警告。现在，这个警告总会触发。</p>
+</li>
+<li>
+<p>foreach发生了细微的变化，控制结构， 主要围绕阵列的内部数组指针和迭代处理的修改。</p>
+<ul>
+<li>
+<p>在PHP7之前，当数组通过 foreach 迭代时，数组指针会移动。现在开始，不再如此</p>
+</li>
+<li>
+<p>当默认使用通过值遍历数组时，foreach 实际操作的是数组的迭代副本，而非数组本身。这就意味着，foreach 中的操作不会修改原数组的值。</p>
+</li>
+<li>
+<p>当使用引用遍历数组时，现在 foreach 在迭代中能更好的跟踪变化。</p>
+</li>
+<li>
+<p>迭代一个非Traversable对象将会与迭代一个引用数组的行为相同。 这将导致在对象添加或删除属性时，foreach通过引用遍历时，有更好的迭代特性也能被应用</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Changes to integer handling</p>
+<ul>
+<li>
+<p>在之前，一个八进制字符如果含有无效数字，该无效数字将被静默删节(0128 将被解析为 012). 现在这样的八进制字符将产生解析错误。</p>
+</li>
+<li>
+<p>以负数形式进行的位移运算将会抛出一个 ArithmeticError</p>
+</li>
+<li>
+<p>超出 integer 位宽的位移操作（无论哪个方向）将始终得到 0 作为结果。在从前，这一操作是结构依赖的。</p>
+</li>
+<li>
+<p>之前的版本中，当 0 被做为除数时，无论是除数 (/) 或取模 (%) 操作，都会抛出一个 E_WARNING 错误并返回 false。现在，除法运算符 (/) 会返回一个由 IEEE 754 指定的浮点数：+INF, -INF 或 NAN。取模操作符 (%) 则会抛出一个 DivisionByZeroError 异常，并且不再产生 E_WARNING 错误。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>string处理上的调整</p>
+<ul>
+<li>
+<p>十六进制字符串不再被认为是数字</p>
+</li>
+<li>
+<p>由于新的 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/migration70.new-features.php#migration70.new-features.unicode-codepoint-escape-syntax">Unicode codepoint escape syntax</a>语法， 紧连着无效序列并包含<code>\u{</code> 的字串可能引起致命错误。 为了避免这一报错，应该避免反斜杠开头。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>被移除的函数（Removed functions）</p>
+<ul>
+<li>
+<p>这两个函数从PHP 4.1.0 开始被废弃，应该使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.call-user-func.php">call_user_func()</a> 和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.call-user-func-array.php">call_user_func_array()</a>。 你也可以考虑使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/functions.variable-functions.php">变量函数</a> 或者 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/functions.arguments.php#functions.variable-arg-list"><code>...</code></a> 操作符。</p>
+</li>
+<li>
+<p>所有 <code>ereg</code> 系列函数被删掉了。 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/book.pcre.php">PCRE</a> 作为推荐的替代品。</p>
+</li>
+<li>
+<p>已废弃的 <strong>mcrypt_generic_end()</strong> 函数已被移除，请使用<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mcrypt-generic-deinit.php">mcrypt_generic_deinit()</a>代替。</p>
+</li>
+<li>
+<p>已废弃的 <strong>mcrypt_ecb()</strong>, <strong>mcrypt_cbc()</strong>, <strong>mcrypt_cfb()</strong> 和 <strong>mcrypt_ofb()</strong> 函数已被移除，请配合恰当的**<code>MCRYPT_MODE_*</code>** 常量来使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.mcrypt-decrypt.php">mcrypt_decrypt()</a>进行代替。</p>
+</li>
+<li>
+<p>所有 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/book.mysql.php">ext/mysql</a> 函数已被删掉了。 如何选择不同的 MySQL API，详情请见 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/mysqlinfo.api.choosing.php">选择 MySQL API</a>。</p>
+</li>
+<li>
+<p>所有 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/migration70.incompatible.php">ext/mssql</a> 函数已被移除。</p>
+</li>
+<li>
+<p>已废弃的 <strong>datefmt_set_timezone_id()</strong> 和 <strong>IntlDateFormatter::setTimeZoneID()</strong> 函数已被移除，请使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/intldateformatter.settimezone.php">datefmt_set_timezone()</a> 与 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/intldateformatter.settimezone.php">IntlDateFormatter::setTimeZone()</a>代替。</p>
+</li>
+<li>
+<p>移除了 <strong>set_magic_quotes_runtime()</strong> 和它的别名 <strong>magic_quotes_runtime()</strong>。 它们在 PHP 5.3.0 中已经被废弃， 并由于 PHP 5.4.0 移除魔术引号（Magic Quotes）而没有用处。</p>
+</li>
+<li>
+<p>已废弃的 <strong>set_socket_blocking()</strong> 函数已被移除，请使用<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stream-set-blocking.php">stream_set_blocking()</a>代替。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.dl.php">dl()</a>在 PHP-FPM 不再可用，在 CLI 和 embed SAPIs 中仍可用。</p>
+</li>
+<li>
+<p>以下GD Type1函数被删除, 推荐使用 TrueType 字体和相关的函数作为替代。</p>
+<ul>
+<li><strong>imagepsbbox()</strong></li>
+<li><strong>imagepsencodefont()</strong></li>
+<li><strong>imagepsextendfont()</strong></li>
+<li><strong>imagepsfreefont()</strong></li>
+<li><strong>imagepsloadfont()</strong></li>
+<li><strong>imagepsslantfont()</strong></li>
+<li><strong>imagepstext()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>被移除掉的 INI 配置指令</p>
+<ul>
+<li>always_populate_raw_post_data</li>
+<li>asp_tags</li>
+<li><code>xsl.security_prefs</code> 指令被移除 在预处理的时候，取而代之的方法 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/xsltprocessor.setsecurityprefs.php">XsltProcessor::setSecurityPrefs()</a> 应该被调用到</li>
+</ul>
+</li>
+<li>
+<p>new 操作符创建的对象不能以引用方式赋值给变量</p>
+</li>
+<li>
+<p>不能以下列名字来命名类、接口以及 trait：</p>
+<ul>
+<li>bool</li>
+<li>int</li>
+<li>float</li>
+<li>string</li>
+<li><strong><code>null</code></strong></li>
+<li><strong><code>true</code></strong></li>
+<li><strong><code>false</code></strong></li>
+</ul>
+</li>
+<li>
+<p>不建议以下列名字来命名类、接口以及 trait，在以后的迭代中，会作为保留关键字：</p>
+<ul>
+<li>resource</li>
+<li>object</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.types.declarations.php#language.types.declarations.mixed">mixed</a></li>
+<li>numeric</li>
+</ul>
+</li>
+<li>
+<p>使用类似 ASP 的标签，以及 script 标签来区分 PHP 代码的方式被移除。</p>
+</li>
+<li>
+<p>在不匹配的上下文中以静态方式调用非静态方法， <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/migration56.deprecated.php#migration56.deprecated.incompatible-context">在 PHP 5.6 中已经废弃</a>， 但是在 PHP 7.0 中， 会导致被调用方法中未定义 <code>$this</code> 变量，以及此行为已经废弃的警告。</p>
+</li>
+<li>
+<p>在使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.generators.syntax.php#control-structures.yield">yield</a> 关键字的时候，不再需要括号， 并且它变更为右联接操作符，其运算符优先级介于 <code>print</code> 和 <code>=&gt;</code> 之间。 可以通过使用括号来消除歧义。</p>
+</li>
+<li>
+<p>函数定义不可以包含多个同名参数</p>
+</li>
+<li>
+<p>Switch 语句不可以包含多个 default 块</p>
+</li>
+<li>
+<p>当在函数代码中使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.func-get-arg.php">func_get_arg()</a> 或 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.func-get-args.php">func_get_args()</a> 函数来检视参数值， 或者使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.debug-backtrace.php">debug_backtrace()</a> 函数查看回溯跟踪， 以及在异常回溯中所报告的参数值是指参数当前的值（有可能是已经被函数内的代码改变过的值）， 而不再是参数被传入函数时候的原始值了。</p>
+</li>
+<li>
+<p>不再提供 $HTTP_RAW_POST_DATA 变量。 请使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.php.php#wrappers.php.input"><code>php://input</code></a> 作为替代。</p>
+</li>
+<li>
+<p>在 INI 文件中，不再支持以 <code>#</code> 开始的注释行， 请使用 <code>;</code>（分号）来表示注释。</p>
+</li>
+<li>
+<p>JSON 扩展已经被 JSOND 扩展取代。 对于数值的处理，有以下两点需要注意的： 第一，数值不能以点号（.）结束 （例如，数值 34. 必须写作 34.0 或 34）。 第二，如果使用科学计数法表示数值，e 前面必须不是点号（.） （例如，3.e3 必须写作 3.0e3 或 3e3）。 另外，空字符串不再被视作有效的 JSON 字符串。</p>
+</li>
+<li>
+<p>在数值溢出的时候，内部函数将会失败，将浮点数转换为整数的时候，如果浮点数值太大，导致无法以整数表达的情况下， 在之前的版本中，内部函数会直接将整数截断，并不会引发错误。 在 PHP 7.0 中，如果发生这种情况，会引发 E_WARNING 错误，并且返回 null。</p>
+</li>
+<li>
+<p>在自定义会话处理器中，如果函数的返回值不是 false，也不是 -1， 会引发致命错误。现在，如果这些函数的返回值不是布尔值，也不是 -1 或者 0，函数调用结果将被视为失败，并且引发 E_WARNING 错误。</p>
+</li>
+<li>
+<p>由于内部排序算法进行了提升， 可能会导致对比时被视为相等的多个元素之间的顺序不稳定。</p>
+</li>
+<li>
+<p>在循环或者 switch 语句之外使用 break 和 continue 被视为编译型错误（之前视为运行时错误），会引发 E_COMPILE_ERROR 错误。</p>
+</li>
+<li>
+<p>Mhash 扩展已经被完全整合进 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/book.hash.php">Hash</a> 扩展了。 因此，不要再使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.extension-loaded.php">extension_loaded()</a> 函数来检测是否支持 MHash 扩展了， 建议使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.function-exists.php">function_exists()</a> 函数来进行检测。 另外，函数 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.get-loaded-extensions.php">get_loaded_extensions()</a> 以及相关的特性中，也不再报告 和 MHash 扩展相关的信息了。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/control-structures.declare.php#control-structures.declare.ticks">declare(ticks)</a> 指示符不再泄漏到不同的编译单元中。</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>PHP4 风格的构造函数（方法名和类名一样）将被弃用，并在将来移除。 如果在类中仅使用了 PHP4 风格的构造函数，PHP7 会产生 E_DEPRECATED 警告。 如果还定义了 __construct() 方法则不受影响。</p>
+</li>
+<li>
+<p>废弃了 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.static.php">静态（Static）</a> 调用未声明成 <strong>static</strong> 的方法，未来可能会彻底移除该功能。</p>
+</li>
+<li>
+<p>废弃了 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.password-hash.php">password_hash()</a> 函数中的盐值选项，阻止开发者生成自己的盐值（通常更不安全）。 开发者不传该值时，该函数自己会生成密码学安全的盐值。因此再无必要传入自己自定义的盐值。</p>
+</li>
+<li>
+<p>废弃了 <code>capture_session_meta</code> 内的 SSL 上下文选项。 现在可以通过 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.stream-get-meta-data.php">stream_get_meta_data()</a> 获取 SSL 元数据（metadata）。</p>
+</li>
+<li>
+<p>LDAP相关的以下函数已被废弃：</p>
+<ul>
+<li>ldap_sort()</li>
+</ul>
+</li>
+<li>
+<p>移除的扩展</p>
+<ul>
+<li>ereg</li>
+<li>mssql</li>
+<li>mysql</li>
+<li>sybase_ct</li>
+</ul>
+</li>
+<li>
+<p>移除的 SAPI</p>
+<ul>
+<li>aolserver</li>
+<li>apache</li>
+<li>apache_hooks</li>
+<li>apache2filter</li>
+<li>caudium</li>
+<li>continuity</li>
+<li>isapi</li>
+<li>milter</li>
+<li>nsapi</li>
+<li>phttpd</li>
+<li>pi3web</li>
+<li>roxen</li>
+<li>thttpd</li>
+<li>tux</li>
+<li>webjames</li>
+</ul>
+</li>
+</ul>
+<h2 id="新特性"><a class="header-anchor" href="#新特性">¶</a>新特性</h2>
+<ul>
+<li>
+<p>标量类型声明</p>
+</li>
+<li>
+<p>返回值类型声明</p>
+</li>
+<li>
+<p>由于日常使用中存在大量同时使用三元表达式和 isset()的情况， 我们添加了null合并运算符 (??) 这个语法糖。如果变量存在且值不为null， 它就会返回自身的值，否则返回它的第二个操作数。</p>
+</li>
+<li>
+<p>太空船操作符用于比较两个表达式。当$a小于、等于或大于$b时它分别返回-1、0或1。 比较的原则是沿用 PHP 的<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/types.comparisons.php">常规比较规则</a>进行的。</p>
+</li>
+<li>
+<p>通过 define() 定义常量数组</p>
+</li>
+<li>
+<p>现在支持通过new class 来实例化一个匿名类，这可以用来替代一些“用后即焚”的完整类定义。</p>
+</li>
+<li>
+<p>这接受一个以16进制形式的 Unicode codepoint，并打印出一个双引号或heredoc包围的 UTF-8 编码格式的字符串。 可以接受任何有效的 codepoint，并且开头的 0 是可以省略的。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/closure.call.php">Closure::call()</a> 现在有着更好的性能，简短干练的暂时绑定一个方法到对象上闭包并调用它。</p>
+</li>
+<li>
+<p>为unserialize()提供过滤，这个特性旨在提供更安全的方式解包不可靠的数据。它通过白名单的方式来防止潜在的代码注入。</p>
+</li>
+<li>
+<p>新增加的 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/class.intlchar.php">IntlChar</a> 类旨在暴露出更多的 ICU 功能。这个类自身定义了许多静态方法用于操作多字符集的 unicode 字符。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.assert.php#function.assert.expectations">预期</a>是向后兼用并增强之前的 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.assert.php">assert()</a> 的方法。 它使得在生产环境中启用断言为零成本，并且提供当断言失败时抛出特定异常的能力。</p>
+</li>
+<li>
+<p>从同一 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.namespaces.definition.php"><code>namespace</code></a> 导入的类、函数和常量现在可以通过单个 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.namespaces.importing.php"><code>use</code></a> 语句 一次性导入了。</p>
+</li>
+<li>
+<p>生成器可以返回表达式，此特性基于 PHP 5.5 版本中引入的生成器特性构建的。 它允许在生成器函数中通过使用 return 语法来返回一个表达式 （但是不允许返回引用值）， 可以通过调用 Generator::getReturn() 方法来获取生成器的返回值， 但是这个方法只能在生成器完成产生工作以后调用一次。</p>
+</li>
+<li>
+<p>现在，只需在最外层生成其中使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.generators.syntax.php#control-structures.yield.from"><code>yield from</code></a>， 就可以把一个生成器自动委派给其他的生成器， <strong>Traversable</strong> 对象或者 array。</p>
+</li>
+<li>
+<p>新加的函数 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.intdiv.php">intdiv()</a> 用来进行 整数的除法运算。</p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.session-start.php">session_start()</a> 可以接受一个 array 作为参数， 用来覆盖 php.ini 文件中设置的 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php">会话配置选项</a>。</p>
+</li>
+<li>
+<p>在 PHP 7 之前，当使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.preg-replace-callback.php">preg_replace_callback()</a> 函数的时候， 由于针对每个正则表达式都要执行回调函数，可能导致过多的分支代码。 而使用新加的 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.preg-replace-callback-array.php">preg_replace_callback_array()</a> 函数， 可以使得代码更加简洁。</p>
+</li>
+<li>
+<p>新加入两个跨平台的函数： <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.random-bytes.php">random_bytes()</a> 和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.random-int.php">random_int()</a> 用来产生高安全级别的随机字符串和随机整数。</p>
+</li>
+<li>
+<p>可以使用 list() 函数来展开实现了 ArrayAccess 接口的对象</p>
+</li>
+<li>
+<p>允许在克隆表达式上访问对象成员，例如： (clone $foo)-&gt;bar()。</p>
+</li>
+</ul>
+<h1 id="变化"><a class="header-anchor" href="#变化">¶</a>变化</h1>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/ChangeLog-7.php#PHP_7_0">原文在这里可以找到</a></p>
+<h2 id="Core"><a class="header-anchor" href="#Core">¶</a>Core</h2>
+<ul>
+<li>Removed ZEND_ACC_FINAL_CLASS, promoting ZEND_ACC_FINAL as final class modifier.</li>
+<li>Removed scoped calls of non-static methods from an incompatible $this context.</li>
+<li>Removed support for #-style comments in ini files.</li>
+<li>Removed support for assigning the result of new by reference.</li>
+<li>Removed dl() function on fpm-fcgi.</li>
+<li>Removed support for hexadecimal numeric strings.</li>
+<li>Removed obsolete extensions and SAPIs. See the full list in UPGRADING.</li>
+</ul>
+<hr>
+<ul>
+<li>Improved zend_qsort(using hybrid sorting algo) for better performance, and also renamed zend_qsort to zend_sort.</li>
+<li>Improved zend_memnchr(using sunday algo) for better performance.</li>
+<li>Use “integer” and “float” instead of “long” and “double” in ZPP, type hint and conversion error messages.</li>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/55428">#55428</a> (E_RECOVERABLE_ERROR when output buffering in output buffering handler).</li>
+<li>Invalid octal literals in source code now produce compile errors, fixes PHPSadness #31.</li>
+<li>Improved __call() and __callStatic() magic method handling. Now they are called in a stackless way using ZEND_CALL_TRAMPOLINE opcode, without additional stack frame.</li>
+<li>Optimized strings concatenation.</li>
+</ul>
+<hr>
+<ul>
+<li>Added NULL byte protection to exec, system and passthru.</li>
+<li>Added error_clear_last() function.</li>
+<li>is_long() &amp; is_integer() is now an alias of is_int().</li>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/55467">#55467</a> (phpinfo: PHP Variables with $ and single quotes).</li>
+<li>Added ?? operator.</li>
+<li>Added &lt;=&gt; operator.</li>
+<li>Added \u{xxxxx} Unicode Codepoint Escape Syntax.</li>
+<li>Added PHP_INT_MIN constant.</li>
+<li>Added Closure::call() method.</li>
+<li>Added options parameter for unserialize allowing to specify acceptable classes (<a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/secure_unserialize">https://wiki.php.net/rfc/secure_unserialize</a>).</li>
+<li>Added stable sorting algo zend_insert_sort.</li>
+<li>Implemented the RFC `Scalar Type Decalarations v0.5`.</li>
+<li>Implemented the RFC `Group Use Declarations`.</li>
+<li>Implemented the RFC `Continue Output Buffering`.</li>
+<li>Implemented the RFC `Constructor behaviour of internal classes`.</li>
+<li>Implemented the RFC `Fix “foreach” behavior`.</li>
+<li>Implemented the RFC `Generator Delegation`.</li>
+<li>Implemented the RFC `Anonymous Class Support`.</li>
+<li>Implemented the RFC `Context Sensitive Lexer`.</li>
+<li>Implemented the RFC `Catchable “Call to a member function bar() on a non-object”`.</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70947">#70947</a> (INI parser segfault with INI_SCANNER_TYPED).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70914">#70914</a> (zend_throw_or_error() format string vulnerability).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70912">#70912</a> (Null ptr dereference instantiating class with invalid array property).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70895">#70895</a>, <a target="_blank" rel="noopener" href="http://bugs.php.net/70898">#70898</a> (null ptr deref and segfault with crafted calable).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70249">#70249</a> (Segmentation fault while running PHPUnit tests on phpBB 3.2-dev).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70805">#70805</a> (Segmentation faults whilst running Drupal 8 test suite).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70842">#70842</a> (Persistent Stream Segmentation Fault).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70862">#70862</a> (Several functions do not check return code of php_stream_copy_to_mem()).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70863">#70863</a> (Incorect logic to increment_function for proxy objects).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70323">#70323</a> (Regression in zend_fetch_debug_backtrace() can cause segfaults).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70873">#70873</a> (Regression on private static properties access).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70748">#70748</a> (Segfault in ini_lex () at Zend/zend_ini_scanner.l).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70689">#70689</a> (Exception handler does not work as expected).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70430">#70430</a> (Stack buffer overflow in zend_language_parser()).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70782">#70782</a> (null ptr deref and segfault (zend_get_class_fetch_type)).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70785">#70785</a> (Infinite loop due to exception during identical comparison).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70630">#70630</a> (Closure::call/bind() crash with ReflectionFunction-&gt; getClosure()).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70662">#70662</a> (Duplicate array key via undefined index error handler).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70681">#70681</a> (Segfault when binding $this of internal instance method to null).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70685">#70685</a> (Segfault for getClosure() internal method rebind with invalid $this).</p>
+</li>
+<li>
+<p>Added zend_internal_function.reserved[] fields.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70557">#70557</a> (Memleak on return type verifying failed).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70555">#70555</a> (fun_get_arg() on unsetted vars return UNKNOW).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70548">#70548</a> (Redundant information printed in case of uncaught engine exception).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70547">#70547</a> (unsetting function variables corrupts backtrace).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70528">#70528</a> (assert() with instanceof adds apostrophes around class name).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70481">#70481</a> (Memory leak in auto_global_copy_ctor() in ZTS build).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70431">#70431</a> (Memory leak in php_ini.c).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70478">#70478</a> (**= does no longer work).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70398">#70398</a> (SIGSEGV, Segmentation fault zend_ast_destroy_ex).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70332">#70332</a> (Wrong behavior while returning reference on object).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70300">#70300</a> (Syntactical inconsistency with new group use syntax).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70321">#70321</a> (Magic getter breaks reference to array property).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70187">#70187</a> (Notice: unserialize(): Unexpected end of serialized data).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70145">#70145</a> (From field incorrectly parsed from headers).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70370">#70370</a> (Bundled libtool.m4 doesn’t handle FreeBSD 10 when building extensions).</p>
+</li>
+<li>
+<p>Fixed bug causing exception traces with anon classes to be truncated.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70397">#70397</a> (Segmentation fault when using Closure::call and yield).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70299">#70299</a> (Memleak while assigning object offsetGet result).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70288">#70288</a> (Apache crash related to ZEND_SEND_REF).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70262">#70262</a> (Accessing array crashes PHP 7.0beta3).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70258">#70258</a> (Segfault if do_resize fails to allocated memory).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70253">#70253</a> (segfault at _efree () in zend_alloc.c:1389).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70240">#70240</a> (Segfault when doing unset($var());).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70223">#70223</a> (Incrementing value returned by magic getter).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70215">#70215</a> (Segfault when __invoke is static).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70207">#70207</a> (Finally is broken with opcache).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70173">#70173</a> (ZVAL_COPY_VALUE_EX broken for 32bit Solaris Sparc).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69487">#69487</a> (SAPI may truncate POST data).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70198">#70198</a> (Checking liveness does not work as expected).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70241">#70241</a>, <a target="_blank" rel="noopener" href="http://bugs.php.net/70293">#70293</a> (Skipped assertions affect Generator returns).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70239">#70239</a> (Creating a huge array doesn’t result in exhausted, but segfault).</p>
+</li>
+<li>
+<p>Fixed “finally” issues.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70098">#70098</a> (Real memory usage doesn’t decrease).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70159">#70159</a> (__CLASS__ is lost in closures).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70156">#70156</a> (Segfault in zend_find_alias_name).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70124">#70124</a> (null ptr deref / seg fault in ZEND_HANDLE_EXCEPTION).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70117">#70117</a> (Unexpected return type error).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70106">#70106</a> (Inheritance by anonymous class).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69674">#69674</a> (SIGSEGV array.c:953).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70164">#70164</a> (__COMPILER_HALT_OFFSET__ under namespace is not defined).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70108">#70108</a> (sometimes empty $_SERVER[‘QUERY_STRING’]).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70179">#70179</a> ($this refcount issue).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69896">#69896</a> (‘asm’ operand has impossible constraints).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70183">#70183</a> (null pointer deref (segfault) in zend_eval_const_expr).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70182">#70182</a> (Segfault in ZEND_ASSIGN_DIV_SPEC_CV_UNUSED_HANDLER).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69793">#69793</a> (Remotely triggerable stack exhaustion via recursive method calls).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69892">#69892</a> (Different arrays compare indentical due to integer key truncation).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70121">#70121</a> (unserialize() could lead to unexpected methods execution / NULL pointer deref).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70089">#70089</a> (segfault at ZEND_FETCH_DIM_W_SPEC_VAR_CONST_HANDLER ()).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70057">#70057</a> (Build failure on 32-bit Mac OS X 10.6.8: recursive inlining).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70012">#70012</a> (Exception lost with nested finally block).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69996">#69996</a> (Changing the property of a cloned object affects the original).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70083">#70083</a> (Use after free with assign by ref to overloaded objects).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70006">#70006</a> (cli - function with default arg = STDOUT crash output).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69521">#69521</a> (Segfault in gc_collect_cycles()).</p>
+</li>
+<li>
+<p>Improved zend_string API.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69955">#69955</a> (Segfault when trying to combine [] and assign-op on ArrayAccess object).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69957">#69957</a> (Different ways of handling div/mod/intdiv).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69900">#69900</a> (Too long timeout on pipes).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69872">#69872</a> (uninitialised value in strtr with array).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69868">#69868</a> (Invalid read of size 1 in zend_compile_short_circuiting).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69849">#69849</a> (Broken output of apache_request_headers).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69840">#69840</a> (iconv_substr() doesn’t work with UTF-16BE).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69823">#69823</a> (PHP 7.0.0alpha1 segmentation fault when exactly 33 extensions are loaded).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69805">#69805</a> (null ptr deref and seg fault in zend_resolve_class_name).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69802">#69802</a> (Reflection on Closure::__invoke borks type hint class name).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69761">#69761</a> (Serialization of anonymous classes should be prevented).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69551">#69551</a> (parse_ini_file() and parse_ini_string() segmentation fault).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69781">#69781</a> (phpinfo() reports Professional Editions of Windows 7/8/8.1/10 as “Business”).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69835">#69835</a> (phpinfo() does not report many Windows SKUs).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69889">#69889</a> (Null coalesce operator doesn’t work for string offsets).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69891">#69891</a> (Unexpected array comparison result).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69892">#69892</a> (Different arrays compare indentical due to integer key truncation).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69893">#69893</a> (Strict comparison between integer and empty string keys crashes).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69767">#69767</a> (Default parameter value with wrong type segfaults).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69756">#69756</a> (Fatal error: Nesting level too deep - recursive dependency ? with ===).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69758">#69758</a> (Item added to array not being removed by array_pop/shift ).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68475">#68475</a> (Add support for $callable() sytnax with ‘Class::method’).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69485">#69485</a> (Double free on zend_list_dtor).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69427">#69427</a> (Segfault on magic method __call of private method in superclass).</p>
+</li>
+<li>
+<p>Fixed weird operators behavior. Division by zero now emits warning and returns +/-INF, modulo by zero and intdid() throws an exception, shifts by negative offset throw exceptions. Compile-time evaluation of division by zero is disabled.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69371">#69371</a> (Hash table collision leads to inaccessible array keys).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68933">#68933</a> (Invalid read of size 8 in zend_std_read_property).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68252">#68252</a> (segfault in Zend/zend_hash.c in function _zend_hash_del_el).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/65598">#65598</a> (Closure executed via static autoload incorrectly marked as static).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66811">#66811</a> (Cannot access static::class in lambda, writen outside of a class).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69568">#69568</a> (call a private function in closure failed).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67959">#67959</a> (Segfault when calling phpversion(‘spl’)).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/63734">#63734</a> (Garbage collector can free zvals that are still referenced).</p>
+</li>
+<li>
+<p>Fixed oversight where define() did not support arrays yet const syntax did.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68797">#68797</a> (Number 2.2250738585072012e-308 converted incorrectly).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69511">#69511</a> (Off-by-one buffer overflow in php_sys_readlink).</p>
+</li>
+</ul>
+<h2 id="CLI-server"><a class="header-anchor" href="#CLI-server">¶</a>CLI server</h2>
+<ul>
+<li>Added support for SEARCH WebDav method.</li>
+</ul>
+<hr>
+<ul>
+<li>Refactor MIME type handling to use a hash table instead of linear search.</li>
+<li>Update the MIME type list from the one shipped by Apache HTTPD.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68291">#68291</a> (404 on urls with ‘+’).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66606">#66606</a> (Sets HTTP_CONTENT_TYPE but not CONTENT_TYPE).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70264">#70264</a> (CLI server directory traversal).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69655">#69655</a> (php -S changes MKCALENDAR request method to MKCOL).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/64878">#64878</a> (304 responses return Content-Type header).</li>
+</ul>
+<h2 id="COM"><a class="header-anchor" href="#COM">¶</a>COM</h2>
+<ul>
+<li>Fixed bug #69939 (Casting object to bool returns false).</li>
+</ul>
+<h2 id="Curl"><a class="header-anchor" href="#Curl">¶</a>Curl</h2>
+<ul>
+<li>Removed support for unsafe file uploads.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70330">#70330</a> (Segmentation Fault with multiple “curl_copy_handle”).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70163">#70163</a> (curl_setopt_array() type confusion).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70065">#70065</a> (curl_getinfo() returns corrupted values).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69831">#69831</a> (Segmentation fault in curl_getinfo).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68937">#68937</a> (Segfault in curl_multi_exec).</li>
+</ul>
+<h2 id="Date"><a class="header-anchor" href="#Date">¶</a>Date</h2>
+<ul>
+<li>Removed $is_dst parameter from mktime() and gmmktime().</li>
+<li>Removed date.timezone warning (<a target="_blank" rel="noopener" href="https://wiki.php.net/rfc/date.timezone_warning_removal">https://wiki.php.net/rfc/date.timezone_warning_removal</a>).</li>
+</ul>
+<hr>
+<ul>
+<li>Added “v” DateTime format modifier to get the 3-digit version of fraction of seconds.</li>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/69089">#69089</a> (Added DateTime::RFC3339_EXTENDED to output in RFC3339 Extended format which includes fraction of seconds).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70245">#70245</a> (strtotime does not emit warning when 2nd parameter is object or string).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70266">#70266</a> (DateInterval::__construct.interval_spec is not supposed to be optional).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70277">#70277</a> (new DateTimeZone($foo) is ignoring text after null byte).</li>
+<li>Fixed day_of_week function as it could sometimes return negative values internally.</li>
+</ul>
+<h2 id="DBA"><a class="header-anchor" href="#DBA">¶</a>DBA</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/62490">#62490</a> (dba_delete returns true on missing item (inifile)).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68711">#68711</a> (useless comparisons).</li>
+</ul>
+<h2 id="DOM"><a class="header-anchor" href="#DOM">¶</a>DOM</h2>
+<ul>
+<li>Made DOMNode::textContent writeable.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70558">#70558</a> (“Couldn’t fetch” error in DOMDocument::registerNodeClass()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70001">#70001</a> (Assigning to DOMNode::textContent does additional entity encoding).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69846">#69846</a> (Segmenation fault (access violation) when iterating over DOMNodeList).</li>
+</ul>
+<h2 id="EXIF"><a class="header-anchor" href="#EXIF">¶</a>EXIF</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70385">#70385</a> (Buffer over-read in exif_read_data with TIFF IFD tag byte value of 32 bytes).</li>
+</ul>
+<h2 id="Fileinfo"><a class="header-anchor" href="#Fileinfo">¶</a>Fileinfo</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66242">#66242</a> (libmagic: don’t assume char is signed).</li>
+</ul>
+<h2 id="Filter"><a class="header-anchor" href="#Filter">¶</a>Filter</h2>
+<ul>
+<li>New FILTER_VALIDATE_DOMAIN and better RFC conformance for FILTER_VALIDATE_URL.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67167">#67167</a> (Wrong return value from FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE).</li>
+</ul>
+<h2 id="FPM"><a class="header-anchor" href="#FPM">¶</a>FPM</h2>
+<ul>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/67106">#67106</a> (Split main fpm config).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70538">#70538</a> (“php-fpm -i” crashes).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70279">#70279</a> (HTTP Authorization Header is sometimes passed to newer reqeusts).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68945">#68945</a> (Unknown admin values segfault pools).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/65933">#65933</a> (Cannot specify config lines longer than 1024 bytes).</li>
+</ul>
+<h2 id="FTP"><a class="header-anchor" href="#FTP">¶</a>FTP</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69082">#69082</a> (FTPS support on Windows).</li>
+</ul>
+<h2 id="GD"><a class="header-anchor" href="#GD">¶</a>GD</h2>
+<ul>
+<li>Removed T1Lib support.</li>
+</ul>
+<hr>
+<ul>
+<li>Replace libvpx with libwebp for bundled libgd.</li>
+<li>Made fontFetch’s path parser thread-safe.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/53156">#53156</a> (imagerectangle problem with point ordering).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66387">#66387</a> (Stack overflow with imagefilltoborder). (CVE-2015-8874)</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70102">#70102</a> (imagecreatefromwebm() shifts colors).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66590">#66590</a> (imagewebp() doesn’t pad to even length).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66882">#66882</a> (imagerotate by -90 degrees truncates image by 1px).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70064">#70064</a> (imagescale(…, IMG_BICUBIC) leaks memory).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69024">#69024</a> (imagescale segfault with palette based image).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/53154">#53154</a> (Zero-height rectangle has whiskers).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67447">#67447</a> (imagecrop() add a black line when cropping).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68714">#68714</a> (copy 'n paste error).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66339">#66339</a> (PHP segfaults in imagexbm).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70047">#70047</a> (gd_info() doesn’t report WebP support).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/61221">#61221</a> (imagegammacorrect function loses alpha channel).</li>
+</ul>
+<h2 id="GMP"><a class="header-anchor" href="#GMP">¶</a>GMP</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70284">#70284</a> (Use after free vulnerability in unserialize() with GMP).</li>
+</ul>
+<h2 id="hash"><a class="header-anchor" href="#hash">¶</a>hash</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70312">#70312</a> (HAVAL gives wrong hashes in specific cases).</li>
+</ul>
+<h2 id="IMAP"><a class="header-anchor" href="#IMAP">¶</a>IMAP</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70158">#70158</a> (Building with static imap fails).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69998">#69998</a> (curl multi leaking memory).</li>
+</ul>
+<h2 id="Intl"><a class="header-anchor" href="#Intl">¶</a>Intl</h2>
+<ul>
+<li>Removed deprecated aliases datefmt_set_timezone_id() and IntlDateFormatter::setTimeZoneID().</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70453">#70453</a> (IntlChar::foldCase() incorrect arguments and missing constants).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70454">#70454</a> (IntlChar::forDigit second parameter should be optional).</li>
+</ul>
+<h2 id="JSON"><a class="header-anchor" href="#JSON">¶</a>JSON</h2>
+<ul>
+<li>Replace non-free JSON parser with a parser from Jsond extension, fixes <a target="_blank" rel="noopener" href="http://bugs.php.net/63520">#63520</a> (JSON extension includes a problematic license statement).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/62010">#62010</a> (json_decode produces invalid byte-sequences).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68546">#68546</a> (json_decode() Fatal error: Cannot access property started with ‘\0’).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68938">#68938</a> (json_decode() decodes empty string without error).</li>
+</ul>
+<h2 id="LDAP"><a class="header-anchor" href="#LDAP">¶</a>LDAP</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/47222">#47222</a> (Implement LDAP_OPT_DIAGNOSTIC_MESSAGE).</li>
+</ul>
+<h2 id="LiteSpeed"><a class="header-anchor" href="#LiteSpeed">¶</a>LiteSpeed</h2>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/install.unix.litespeed.php">https://www.php.net/manual/zh/install.unix.litespeed.php</a></p>
+<ul>
+<li><code>Updated LiteSpeed SAPI code from V5.5 to V6.6.</code></li>
+</ul>
+<h2 id="libxml"><a class="header-anchor" href="#libxml">¶</a>libxml</h2>
+<ul>
+<li>Fixed handling of big lines in error messages with libxml &gt;= 2.9.0.</li>
+</ul>
+<h2 id="Mcrypt"><a class="header-anchor" href="#Mcrypt">¶</a>Mcrypt</h2>
+<ul>
+<li>Removed mcrypt_generic_end() alias.</li>
+<li>Removed mcrypt_ecb(), mcrypt_cbc(), mcrypt_cfb(), mcrypt_ofb().</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70625">#70625</a> (mcrypt_encrypt() won’t return data when no IV was specified under RC4).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69833">#69833</a> (mcrypt fd caching not working).</li>
+<li>Fixed possible read after end of buffer and use after free.</li>
+</ul>
+<h2 id="Mysqli"><a class="header-anchor" href="#Mysqli">¶</a>Mysqli</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/32490">#32490</a> (constructor of mysqli has wrong name).</li>
+</ul>
+<h2 id="Mysqlnd"><a class="header-anchor" href="#Mysqlnd">¶</a>Mysqlnd</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70949">#70949</a> (SQL Result Sets With NULL Can Cause Fatal Memory Errors).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70384">#70384</a> (mysqli_real_query():Unknown type 245 sent by the server).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70456">#70456</a> (mysqlnd doesn’t activate TCP keep-alive when connecting to a server).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70572">#70572</a> segfault in mysqlnd_connect.</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69796">#69796</a> (mysqli_stmt::fetch doesn’t assign null values to bound variables).</li>
+</ul>
+<h2 id="OCI8"><a class="header-anchor" href="#OCI8">¶</a>OCI8</h2>
+<ul>
+<li>Corrected oci8 hash destructors to prevent segfaults, and a few other fixes.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed memory leak with LOBs.</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68298">#68298</a> (OCI int overflow).</li>
+</ul>
+<h2 id="ODBC"><a class="header-anchor" href="#ODBC">¶</a>ODBC</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69975">#69975</a> (PHP segfaults when accessing nvarchar(max) defined columns. (CVE-2015-8879)</li>
+</ul>
+<h2 id="Opcache"><a class="header-anchor" href="#Opcache">¶</a>Opcache</h2>
+<ul>
+<li>Removed opcache.load_comments configuration directive. Now doc comments loading costs nothing and always enabled.</li>
+</ul>
+<hr>
+<ul>
+<li>Added experimental (disabled by default) file based opcode cache.</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70656">#70656</a> (require() statement broken after opcache_reset() or a few hours of use).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70843">#70843</a> (Segmentation fault on MacOSX with opcache.file_cache_only=1).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70724">#70724</a> (Undefined Symbols from <a target="_blank" rel="noopener" href="http://opcache.so">opcache.so</a> on Mac OS X 10.10).</p>
+</li>
+<li>
+<p>Fixed compatibility with Windows 10 (see also bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70652">#70652</a>).</p>
+</li>
+<li>
+<p>Attmpt to fix “Unable to reattach to base address” problem.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70423">#70423</a> (Warning Internal error: wrong size calculation).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70237">#70237</a> (Empty while and do-while segmentation fault with opcode on CLI enabled).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70111">#70111</a> (Segfault when a function uses both an explicit return type and an explicit cast).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70058">#70058</a> (Build fails when building for i386).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70022">#70022</a> (Crash with opcache using opcache.file_cache_only=1).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69838">#69838</a> (Wrong size calculation for function table).</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69688">#69688</a> (segfault with eval and opcache fast shutdown).</p>
+</li>
+<li>
+<p>Fixed bug with try blocks being removed when extended_info opcode generation is turned on.</p>
+</li>
+<li>
+<p>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68644">#68644</a> (strlen incorrect : mbstring + func_overload=2 +UTF-8 + Opcache).</p>
+</li>
+</ul>
+<h2 id="OpenSSL"><a class="header-anchor" href="#OpenSSL">¶</a>OpenSSL</h2>
+<ul>
+<li>Require at least OpenSSL version 0.9.8.</li>
+</ul>
+<hr>
+<ul>
+<li>Removed “CN_match” and “SNI_server_name” SSL context options. Use automatic detection or the “peer_name” option instead.</li>
+</ul>
+<hr>
+<ul>
+<li>Added “alpn_protocols” SSL context option allowing encrypted client/server streams to negotiate alternative protocols using the ALPN TLS extension when built against OpenSSL 1.0.2 or newer. Negotiated protocol information is accessible through stream_get_meta_data() output.</li>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/70438">#70438</a> (Add IV parameter for openssl_seal and openssl_open).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68312">#68312</a> (Lookup for openssl.cnf causes a message box).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/55259">#55259</a> (openssl extension does not get the DH parameters from DH key resource).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70395">#70395</a> (Missing ARG_INFO for openssl_seal()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/60632">#60632</a> (openssl_seal fails with AES).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70014">#70014</a> (openssl_random_pseudo_bytes() is not cryptographically secure). (CVE-2015-8867)</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69882">#69882</a> (OpenSSL error “key values mismatch” after openssl_pkcs12_read with extra cert).</li>
+</ul>
+<h2 id="Pcntl"><a class="header-anchor" href="#Pcntl">¶</a>Pcntl</h2>
+<ul>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/68505">#68505</a> (Added wifcontinued and wcontinued).</li>
+<li>Added rusage support to pcntl_wait() and pcntl_waitpid().</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70386">#70386</a> (Can’t compile on NetBSD because of missing WCONTINUED and WIFCONTINUED).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/60509">#60509</a> (pcntl_signal doesn’t decrease ref-count of old handler when setting SIG_DFL).</li>
+</ul>
+<h2 id="PCRE"><a class="header-anchor" href="#PCRE">¶</a>PCRE</h2>
+<ul>
+<li>Removed support for the /e (PREG_REPLACE_EVAL) modifier.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70232">#70232</a> (Incorrect bump-along behavior with \K and empty string match).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70345">#70345</a> (Multiple vulnerabilities related to PCRE functions).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70232">#70232</a> (Incorrect bump-along behavior with \K and empty string match).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/53823">#53823</a> (preg_replace: * qualifier on unicode replace garbles the string).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69864">#69864</a> (Segfault in preg_replace_callback).</li>
+</ul>
+<h2 id="PDO"><a class="header-anchor" href="#PDO">¶</a>PDO</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70861">#70861</a> (Segmentation fault in pdo_parse_params() during Drupal 8 test suite).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70389">#70389</a> (PDO constructor changes unrelated variables).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70272">#70272</a> (Segfault in pdo_mysql).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70221">#70221</a> (persistent sqlite connection + custom function segfaults).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/59450">#59450</a> (./configure fails with “Cannot find php_pdo_driver.h”).</li>
+</ul>
+<h2 id="PDO-DBlib"><a class="header-anchor" href="#PDO-DBlib">¶</a>PDO_DBlib</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69757">#69757</a> (Segmentation fault on nextRowset).</li>
+</ul>
+<h2 id="PDO-mysql"><a class="header-anchor" href="#PDO-mysql">¶</a>PDO_mysql</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68424">#68424</a> (Add new PDO mysql connection attr to control multi statements option).</li>
+</ul>
+<h2 id="PDO-OCI"><a class="header-anchor" href="#PDO-OCI">¶</a>PDO_OCI</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70308">#70308</a> (PDO::ATTR_PREFETCH is ignored).</li>
+</ul>
+<h2 id="PDO-pgsql"><a class="header-anchor" href="#PDO-pgsql">¶</a>PDO_pgsql</h2>
+<ul>
+<li>Removed PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT attribute in favor of ATTR_EMULATE_PREPARES).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69752">#69752</a> (PDOStatement::execute() leaks memory with DML Statements when closeCuror() is u).</li>
+</ul>
+<h2 id="Phar"><a class="header-anchor" href="#Phar">¶</a>Phar</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69720">#69720</a> (Null pointer dereference in phar_get_fp_offset()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70433">#70433</a> (Uninitialized pointer in phar_make_dirstream when zip entry filename is “/”).</li>
+<li>Improved fix for bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69441">#69441</a>.</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70019">#70019</a> (Files extracted from archive may be placed outside of destination directory).</li>
+</ul>
+<h2 id="Phpdbg"><a class="header-anchor" href="#Phpdbg">¶</a>Phpdbg</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70614">#70614</a> (incorrect exit code in -rr mode with Exceptions).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70532">#70532</a> (phpdbg must respect set_exception_handler).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70531">#70531</a> (Run and quit mode (-qrr) should not fallback to interactive mode).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70533">#70533</a> (Help overview (-h) does not rpint anything under Windows).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70449">#70449</a> (PHP won’t compile on 10.4 and 10.5 because of missing constants).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70214">#70214</a> (FASYNC not defined, needs sys/file.h include).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70138">#70138</a> (Segfault when displaying memory leaks).</li>
+</ul>
+<h2 id="Reflection"><a class="header-anchor" href="#Reflection">¶</a>Reflection</h2>
+<ul>
+<li>Added ReflectionGenerator class.</li>
+<li>Added reflection support for return types and type declarations.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70650">#70650</a> (Wrong docblock assignment).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70674">#70674</a> (ReflectionFunction::getClosure() leaks memory when used for internal functions).</li>
+<li>Fixed bug causing bogus traces for ReflectionGenerator::getTrace().</li>
+<li>Fixed inheritance chain of Reflector interface.</li>
+</ul>
+<h2 id="Session"><a class="header-anchor" href="#Session">¶</a>Session</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70876">#70876</a> (Segmentation fault when regenerating session id with strict mode).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70529">#70529</a> (Session read causes “String is not zero-terminated” error).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70013">#70013</a> (Reference to $_SESSION is lost after a call to session_regenerate_id()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69952">#69952</a> (Data integrity issues accessing superglobals by reference).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67694">#67694</a> (Regression in session_regenerate_id()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68941">#68941</a> (mod_files.sh is a bash-script).</li>
+</ul>
+<h2 id="SOAP"><a class="header-anchor" href="#SOAP">¶</a>SOAP</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70940">#70940</a> (Segfault in soap / type_to_string).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70900">#70900</a> (SoapClient systematic out of memory error).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70875">#70875</a> (Segmentation fault if wsdl has no targetNamespace attribute).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70715">#70715</a> (Segmentation fault inside soap client).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70709">#70709</a> (SOAP Client generates Segfault).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70388">#70388</a> (SOAP serialize_function_call() type confusion / RCE).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70081">#70081</a> (SoapClient info leak / null pointer dereference via multiple type confusions).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70079">#70079</a> (Segmentation fault after more than 100 SoapClient calls).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70032">#70032</a> (make_http_soap_request calls zend_hash_get_current_key_ex(,NULL).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68361">#68361</a> (Segmentation fault on SoapClient::__getTypes).</li>
+</ul>
+<h2 id="SPL"><a class="header-anchor" href="#SPL">¶</a>SPL</h2>
+<ul>
+<li>Changed ArrayIterator implementation using zend_hash_iterator_… API. Allowed modification of iterated ArrayObject using the same behavior as proposed in `Fix “foreach” behavior`. Removed “Array was modified outside object and internal position is no longer valid” hack.</li>
+</ul>
+<hr>
+<ul>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/67886">#67886</a> (SplPriorityQueue/SplHeap doesn’t expose extractFlags nor curruption state).</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70959">#70959</a> (ArrayObject unserialize does not restore protected fields).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70853">#70853</a> (SplFixedArray throws exception when using ref variable as index).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70868">#70868</a> (PCRE JIT and pattern reuse segfault).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70730">#70730</a> (Incorrect ArrayObject serialization if unset is called in serialize()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70573">#70573</a> (Cloning SplPriorityQueue leads to memory leaks).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70303">#70303</a> (Incorrect constructor reflection for ArrayObject).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70068">#70068</a> (Dangling pointer in the unserialization of ArrayObject items).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70166">#70166</a> (Use After Free Vulnerability in unserialize() with SPLArrayObject).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70168">#70168</a> (Use After Free Vulnerability in unserialize() with SplObjectStorage).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70169">#70169</a> (Use After Free Vulnerability in unserialize() with SplDoublyLinkedList).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70053">#70053</a> (MutlitpleIterator array-keys incompatible change in PHP 7).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69970">#69970</a> (Use-after-free vulnerability in spl_recursive_it_move_forward_ex()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69845">#69845</a> (ArrayObject with ARRAY_AS_PROPS broken).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/66405">#66405</a> (RecursiveDirectoryIterator::CURRENT_AS_PATHNAME breaks the RecursiveIterator).</li>
+</ul>
+<h2 id="SQLite3"><a class="header-anchor" href="#SQLite3">¶</a>SQLite3</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70571">#70571</a> (Memory leak in sqlite3_do_callback).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69972">#69972</a> (Use-after-free vulnerability in sqlite3SafetyCheckSickOrOk()).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69897">#69897</a> (segfault when manually constructing SQLite3Result).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68260">#68260</a> (SQLite3Result::fetchArray declares wrong required_num_args).</li>
+</ul>
+<h2 id="Standard"><a class="header-anchor" href="#Standard">¶</a>Standard</h2>
+<ul>
+<li>Deprecated salt option to password_hash.</li>
+<li>Removed call_user_method() and call_user_method_array() functions.</li>
+<li>Remove string category support in setlocale().</li>
+<li>Remove set_magic_quotes_runtime() and its alias magic_quotes_runtime().</li>
+<li>Removed hardcoded limit on number of pipes in proc_open().</li>
+</ul>
+<hr>
+<ul>
+<li>Improved precision of log() function for base 2 and 10.</li>
+</ul>
+<hr>
+<ul>
+<li>Added Windows support for getrusage().</li>
+<li>Added preg_replace_callback_array function.</li>
+<li>Added intdiv() function.</li>
+<li>Implemented FR <a target="_blank" rel="noopener" href="http://bugs.php.net/70112">#70112</a> (Allow “dirname” to go up various times).</li>
+<li>Implemented the RFC `Random Functions Throwing Exceptions in PHP 7`.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed count on symbol tables.</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70963">#70963</a> (Unserialize shows UNKNOWN in result).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70910">#70910</a> (extract() breaks variable references).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70808">#70808</a> (array_merge_recursive corrupts memory of unset items).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70667">#70667</a> (strtr() causes invalid writes and a crashes).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70668">#70668</a> (array_keys() doesn’t respect references when $strict is true).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70487">#70487</a> (pack(‘x’) produces an error).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70342">#70342</a> (changing configuration with ignore_user_abort(true) isn’t working).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70295">#70295</a> (Segmentation fault with setrawcookie).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67131">#67131</a> (setcookie() conditional for empty values not met).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70365">#70365</a> (Use-after-free vulnerability in unserialize() with SplObjectStorage).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70366">#70366</a> (Use-after-free vulnerability in unserialize() with SplDoublyLinkedList).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70250">#70250</a> (extract() turns array elements to references).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70211">#70211</a> (php 7 ZEND_HASH_IF_FULL_DO_RESIZE use after free).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70208">#70208</a> (Assert breaking access on objects).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70140">#70140</a> (str_ireplace/php_string_tolower - Arbitrary Code Execution).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/36365">#36365</a> (scandir duplicates file name at every 65535th file).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70096">#70096</a> (Repeated iptcembed() adds superfluous FF bytes).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70018">#70018</a> (exec does not strip all whitespace).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69983">#69983</a> (get_browser fails with user agent of null).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69976">#69976</a> (Unable to parse “all” urls with colon char).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69768">#69768</a> (escapeshell*() doesn’t cater to !).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/62922">#62922</a> (Truncating entire string should result in string).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69723">#69723</a> (Passing parameters by reference and array_column).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69523">#69523</a> (Cookie name cannot be empty).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69325">#69325</a> (php_copy_file_ex does not pass the argument).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69299">#69299</a> (Regression in array_filter’s $flag argument in PHP 7).</li>
+<li>Fixed user session handlers (See rfc:session.user.return-value).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/65272">#65272</a> (flock() out parameter not set correctly in windows).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69686">#69686</a> (password_verify reports back error on PHP7 will null string).</li>
+</ul>
+<h2 id="Streams"><a class="header-anchor" href="#Streams">¶</a>Streams</h2>
+<ul>
+<li>Removed set_socket_blocking() in favor of its alias stream_set_blocking().</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70361">#70361</a> (HTTP stream wrapper doesn’t close keep-alive connections).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/68532">#68532</a> (convert.base64-encode omits padding bytes).</li>
+</ul>
+<h2 id="Tokenizer"><a class="header-anchor" href="#Tokenizer">¶</a>Tokenizer</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69430">#69430</a> (token_get_all has new irrecoverable errors).</li>
+</ul>
+<h2 id="XMLReader"><a class="header-anchor" href="#XMLReader">¶</a>XMLReader</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70309">#70309</a> (XmlReader read generates extra output).</li>
+</ul>
+<h2 id="XMLRPC"><a class="header-anchor" href="#XMLRPC">¶</a>XMLRPC</h2>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70526">#70526</a> (xmlrpc_set_type returns false on success).</li>
+</ul>
+<h2 id="XSL"><a class="header-anchor" href="#XSL">¶</a>XSL</h2>
+<ul>
+<li>Removed xsl.security_prefs ini option.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70678">#70678</a> (PHP7 returns true when false is expected).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70535">#70535</a> (XSLT: free(): invalid pointer).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/69782">#69782</a> (NULL pointer dereference).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/64776">#64776</a> (The XSLT extension is not thread safe).</li>
+</ul>
+<h2 id="Zlib"><a class="header-anchor" href="#Zlib">¶</a>Zlib</h2>
+<ul>
+<li>Added deflate_init(), deflate_add(), inflate_init(), inflate_add() functions allowing incremental/streaming compression/decompression.</li>
+</ul>
+<h2 id="Zip"><a class="header-anchor" href="#Zip">¶</a>Zip</h2>
+<ul>
+<li>Update bundled libzip to 1.0.1.</li>
+</ul>
+<hr>
+<ul>
+<li>Added ZipArchive::setCompressionName and ZipArchive::setCompressionIndex methods.</li>
+</ul>
+<hr>
+<ul>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70322">#70322</a> (ZipArchive::close() doesn’t indicate errors).</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/70350">#70350</a> (ZipArchive::extractTo allows for directory traversal when creating directories). (CVE-2014-9767)</li>
+<li>Fixed bug <a target="_blank" rel="noopener" href="http://bugs.php.net/67161">#67161</a> (ZipArchive::getStream() returns NULL for certain file).</li>
+</ul>
+<h1 id="关键问题及解决思路"><a class="header-anchor" href="#关键问题及解决思路">¶</a>关键问题及解决思路</h1>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/PHP%E5%8F%91%E5%B1%95%E5%8F%B2/" rel="tag"># PHP发展史</a>
+              <a href="/tags/%E6%8A%80%E6%9C%AF%E5%8F%91%E5%B1%95%E5%8F%B2/" rel="tag"># 技术发展史</a>
+              <a href="/tags/PHP7/" rel="tag"># PHP7</a>
+              <a href="/tags/LiteSpeed/" rel="tag"># LiteSpeed</a>
+              <a href="/tags/PGO/" rel="tag"># PGO</a>
+              <a href="/tags/HugePage/" rel="tag"># HugePage</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2003/06/29/PHP-Version-5-0-0-Beta-1-Published/" rel="prev" title="PHP Version 5.0.0 Beta 1 Published">
+                  <i class="fa fa-chevron-left"></i> PHP Version 5.0.0 Beta 1 Published
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/12/01/PHP-Version-7-1-0-Published/" rel="next" title="PHP Version 7.1.0 Published">
+                  PHP Version 7.1.0 Published <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  © 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯狂的茶几</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">162k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:27</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+  
+
+
+  
+
+
+
+
+
+
+
+<script src="/bundle.js"></script><script>{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script></body></html>
